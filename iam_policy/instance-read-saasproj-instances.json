@@ -1,0 +1,11 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowReadingIntoInstancesDir",
+      "Effect": "Allow",
+      "Resource": ["arn:aws:s3:::saasproj/instances/*"],
+      "Action": ["s3:GetObject*"]
+    }
+  ]
+}

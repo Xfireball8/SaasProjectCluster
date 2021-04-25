@@ -65,3 +65,54 @@ resource "aws_route_table_association" "subnet_route_association" {
   subnet_id = aws_subnet.cluster_network.id
   route_table_id = aws_vpc.k8s_vpc.default_route_table_id
 }
+
+resource "aws_instance" "control_plane" {
+	ami = var.fedora_core_os_ami
+	instance_type = "t2.small"
+	associate_public_ip_address = "true"
+	subnet_id = aws_subnet.cluster_network.id
+	private_ip = "192.168.1.62"
+	user_data = file("ignition/master.ign")
+  iam_instance_profile = aws_iam_instance_profile.instances_profile.name 
+
+	root_block_device {
+		delete_on_termination = "true"
+		volume_size = 30
+		volume_type = "gp2"
+	}
+
+}
+
+resource "aws_instance" "worker_node_A" {
+	ami = var.fedora_core_os_ami
+	instance_type = "t2.small"
+	associate_public_ip_address = "true"
+	subnet_id = aws_subnet.cluster_network.id
+	private_ip = "192.168.1.60"
+	user_data = file("ignition/worker-A.ign")
+  iam_instance_profile = aws_iam_instance_profile.instances_profile.name 
+
+	root_block_device {
+		delete_on_termination = "true"
+		volume_size = 30
+		volume_type = "gp2"
+	}
+
+}
+
+resource "aws_instance" "worker_node_B" {
+	ami = var.fedora_core_os_ami
+	instance_type = "t2.small"
+	associate_public_ip_address = "true"
+	subnet_id = aws_subnet.cluster_network.id
+	private_ip = "192.168.1.59"
+	user_data = file("ignition/worker-B.ign")
+  iam_instance_profile = aws_iam_instance_profile.instances_profile.name 
+
+	root_block_device {
+		delete_on_termination = "true"
+		volume_size = 30
+		volume_type = "gp2"
+	}
+}
+
