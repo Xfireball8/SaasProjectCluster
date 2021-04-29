@@ -31,7 +31,7 @@ If you use the IaC of the super-admin repo you can replicate this setup easily.
 
 Check the code here :
 
-You then just have to use Terraform to build the cluster. 
+Finally you can use Terraform to build the cluster. 
 $ terraform init
 $ terraform plan
 $ terraform apply
