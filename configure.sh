@@ -45,7 +45,7 @@ cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
 -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
 -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
 -profile=kubernetes \
--hostname=10.240.0.1,192.168.1.62,127.0.0.1,${KUBERNETES_HOSTNAMES} \
+-hostname=10.240.0.1,10.0.2.15,127.0.0.1,${KUBERNETES_HOSTNAMES} \
 $CONFIGURE_DIR/certs_configuration/kubernetes-csr.json | cfssljson -bare kubernetes
 
   # k8s Service Account
@@ -156,7 +156,7 @@ cd $CONFIGURE_DIR/kubeconfigs/
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
-  --server=https://192.168.1.62:6443 \
+  --server=https://10.0.2.15:6443 \
   --kubeconfig=kube-proxy.kubeconfig
 
 kubectl config set-credentials system:kube-proxy \
@@ -177,7 +177,7 @@ cd $CONFIGURE_DIR/kubeconfigs/worker-A/
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
-  --server=https://192.168.1.62:6443 \
+  --server=https://10.0.2.15:6443 \
   --kubeconfig=worker-A.kubeconfig
 
 kubectl config set-credentials system:node:worker-A \
@@ -198,7 +198,7 @@ cd $CONFIGURE_DIR/kubeconfigs/worker-B/
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
-  --server=https://192.168.1.62:6443 \
+  --server=https://10.0.2.15:6443 \
   --kubeconfig=worker-B.kubeconfig
 
 kubectl config set-credentials system:node:worker-B \
