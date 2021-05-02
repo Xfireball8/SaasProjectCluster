@@ -50,3 +50,6 @@ storage:
     - path: "/var/lib/kubelet/kube-scheduler.kubeconfig"
       contents:
         source: "s3://saasproj/instances/kube-scheduler.kubeconfig"
+    - path: "/home/.kube/admin.kubeconfig"
+      contents:
+        source: "s3://saasproj/instances/admin.kubeconfig"
