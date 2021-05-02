@@ -23,30 +23,30 @@ storage:
     - path: "/etc/etcd/kubernetes-key.pem"
       contents:
         source: "s3://saasproj/instances/kubernetes-key.pem"
-    - path: "/var/lib/kubernetes/ca.pem"
+    - path: "/var/lib/kubelet/ca.pem"
       contents:
         source: "s3://saasproj/instances/ca.pem"
-    - path: "/var/lib/kubernetes/ca-key.pem"
+    - path: "/var/lib/kubelet/ca-key.pem"
       contents:
         source: "s3://saasproj/instances/ca-key.pem"
-    - path: "/var/lib/kubernetes/kubernetes-key.pem"
+    - path: "/var/lib/kubelet/kubernetes-key.pem"
       contents:
         source: "s3://saasproj/instances/kubernetes-key.pem"
-    - path: "/var/lib/kubernetes/kubernetes.pem"
+    - path: "/var/lib/kubelet/kubernetes.pem"
       contents:
         source: "s3://saasproj/instances/kubernetes.pem"
-    - path: "/var/lib/kubernetes/service-account-key.pem"
+    - path: "/var/lib/kubelet/service-account-key.pem"
       contents:
         source: "s3://saasproj/instances/service-account-key.pem"
-    - path: "/var/lib/kubernetes/service-account.pem"
+    - path: "/var/lib/kubelet/service-account.pem"
       contents:
         source: "s3://saasproj/instances/service-account.pem"
-    - path: "/var/lib/kubernetes/encryption-config.yaml"
+    - path: "/var/lib/kubelet/encryption-config.yaml"
       contents:
         source: "s3://saasproj/instances/encryption-config.yaml"
-    - path: "/var/lib/kubernetes/kube-controller-manager.kubeconfig"
+    - path: "/var/lib/kubelet/kube-controller-manager.kubeconfig"
       contents:
         source: "s3://saasproj/instances/kube-controller-manager.kubeconfig"
-    - path: "/var/lib/kubernetes/kube-scheduler.kubeconfig"
+    - path: "/var/lib/kubelet/kube-scheduler.kubeconfig"
       contents:
         source: "s3://saasproj/instances/kube-scheduler.kubeconfig"
