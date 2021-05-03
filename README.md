@@ -1,14 +1,28 @@
 WORK IN PROGRESS!!!!!!!
 
-It's a learning project that deploys a Kubernetes Cluster and Gitlab on AWS under 5 Minutes.
+== What is this ? ==
 
-This repo is the SaaS entreprise fictional administrator's infrastructure repo.
+This is a big project about the PoC of an infrastructure related to cloud-native applications. 
+It is a prelude of other projects, it has been made to demonstrate what i can achieve to learn 
+by myself and to illustrate my skills in my resume. 
+It's a prelude and prototype of other cool projects that have yet to come :) !
 
-Rights and materials (Buckets & Workstations) that the admin needs has been set-up by the
-super-admin, you can go to this repo to find the IaC associated to it.
+It is temporary public because i'm searching for an internship/job and i'm candidating to MsCs for 
+the next year.
 
-The Ostree Configurations engineered to bring the cluster to the desired state 
-are available in this repo for the controller nodes, and this repo for the worker nodes.
+--------------------------------------------------------------------------------------------------
+
+The objective is to deploy a Kubernetes Cluster + Gitlab on AWS under 5 Minutes.
+
+This repo is the SaaS DevOps engineer infrastructure repo.
+
+Rights and resources (Buckets) that the DevOps engineer needs has been set-up by the
+super-admin, you can go to this repo to find the IaC associated to it : 
+https://github.com/Xfireball8/AWSSuperAdminCode/edit/main/README.md
+
+To get a cluster up and ready fast and at the desired state, the DevOps
+engineer create a custom OS based on Fedora Core OS and the code is available
+on this repo : https://github.com/Xfireball8/KubernetesOS-Config
 
 This project use as dependencies :
   - cfssl for PKI gen.
@@ -32,7 +46,7 @@ If you use the IaC of the super-admin repo you can replicate this setup easily.
 Check the code here :
 
 Finally you can use Terraform to build the cluster. 
-$ terraform init
-$ terraform plan
-$ terraform apply
+> terraform init
+> terraform plan
+> terraform apply
 
