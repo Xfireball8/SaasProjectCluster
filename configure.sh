@@ -72,7 +72,7 @@ cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
 -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
 -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
 -profile=kubernetes \
--hostname=ip-192-168-1-60.eu-west-3.compute.internal,192.168.1.60 \
+-hostname=ip-192-168-1-60.eu-west-3.compute.internal,10.0.2.16 \
 $CONFIGURE_DIR/certs_configuration/worker-A-csr.json | cfssljson -bare worker-A
 
   # worker-B kubelet
@@ -81,7 +81,7 @@ cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
 -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
 -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
 -profile=kubernetes \
--hostname=ip-192-168-1-59.eu-west-3.compute.internal,192.168.1.59 \
+-hostname=ip-192-168-1-59.eu-west-3.compute.internal,10.0.2.17 \
 $CONFIGURE_DIR/certs_configuration/worker-B-csr.json | cfssljson -bare worker-B
 
 #Master Components Kubeconfigs
