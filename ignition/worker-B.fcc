@@ -20,12 +20,12 @@ storage:
     - path: "/var/lib/kubelet/worker-B.pem"
       contents:
         source: "s3://saasproj/instances/worker-B.pem"
-    - path: "/var/lib/kubelet/kubeconfig/worker-B.kubeconfig"
+    - path: "/var/lib/kubelet/worker-B.kubeconfig"
       contents:
         source: "s3://saasproj/instances/worker-B.kubeconfig"
-    - path: "/var/lib/kubernetes/ca.pem"
+    - path: "/var/lib/kubelet/ca.pem"
       contents:
         source: "s3://saasproj/instances/ca.pem"
-    - path: "/var/lib/kube-proxy/kubeconfig/kube-proxy.kubeconfig"
+    - path: "/var/lib/kubelet/kube-proxy.kubeconfig"
       contents:
         source: "s3://saasproj/instances/kube-proxy.kubeconfig"

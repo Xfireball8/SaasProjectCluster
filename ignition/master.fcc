@@ -5,13 +5,6 @@ passwd:
     - name: core
       ssh_authorized_keys:
         - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDV174+I6z1uos2Qhq+ex3yhN3Kf7fVRZ6NEYydhKCtpdSq1I5mKAdbaLd8LQCjA7Y0HjXJCkvVLeW2UgfelDbg6c3BNGZ/dCEi6P0VbUHjhzB68CcOoTmcluC/KYaihSg6qiyW/uW1zJ+Rl0bHlMOZZtlE5bqw/KSxGQ6wbVqrE0yL3EwumlSXJq3GyZFkymLyaSZ5+bNsUkQJhGrzYOXYKJpzcsc01DrQ+nCFAQZT68rxpIZVXrEdOQoCmgY3VJqVNtwXC4LVGcA+Pdn3t+OAyT8abQIuOar2PaY26PqjBclnLU35Ki9PJt/dUglfRi5Qzdm68cq5YSHyOGszzHIv faisalsalhi@MacBook-Pro-de-Faisal-2.local
-    - name: k8s_cp
-      groups:
-        - sudo
-        - wheel
-        - docker
-      ssh_authorized_keys:
-        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDV174+I6z1uos2Qhq+ex3yhN3Kf7fVRZ6NEYydhKCtpdSq1I5mKAdbaLd8LQCjA7Y0HjXJCkvVLeW2UgfelDbg6c3BNGZ/dCEi6P0VbUHjhzB68CcOoTmcluC/KYaihSg6qiyW/uW1zJ+Rl0bHlMOZZtlE5bqw/KSxGQ6wbVqrE0yL3EwumlSXJq3GyZFkymLyaSZ5+bNsUkQJhGrzYOXYKJpzcsc01DrQ+nCFAQZT68rxpIZVXrEdOQoCmgY3VJqVNtwXC4LVGcA+Pdn3t+OAyT8abQIuOar2PaY26PqjBclnLU35Ki9PJt/dUglfRi5Qzdm68cq5YSHyOGszzHIv faisalsalhi@MacBook-Pro-de-Faisal-2.local
 storage:
   files:
     - path: "/etc/etcd/ca.pem"
@@ -50,6 +43,6 @@ storage:
     - path: "/var/lib/kubelet/kube-scheduler.kubeconfig"
       contents:
         source: "s3://saasproj/instances/kube-scheduler.kubeconfig"
-    - path: "/home/.kube/admin.kubeconfig"
+    - path: "/home/core/.kube/config"
       contents:
         source: "s3://saasproj/instances/admin.kubeconfig"
