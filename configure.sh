@@ -153,6 +153,8 @@ kubectl config use-context default --kubeconfig=admin.kubeconfig
 
 cd $CONFIGURE_DIR/kubeconfigs/
 
+# Kube-proxy Related Stuff 
+
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
@@ -171,6 +173,18 @@ kubectl config set-context default \
   --kubeconfig=kube-proxy.kubeconfig \
 
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+
+# Kube-proxy config yaml file
+cat > kube-proxy-config.yaml <<EOF
+kind: KubeProxyConfiguration
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+clientConnection:
+  kubeconfig: "/var/lib/kube-proxy/kubeconfig"
+mode: "iptables"
+clusterCIDR: "10.200.0.0/16"
+EOF
+
+# Worker A assets generation
 
 cd $CONFIGURE_DIR/kubeconfigs/worker-A/
 
@@ -193,6 +207,32 @@ kubectl config set-context default \
 
 kubectl config use-context default --kubeconfig=worker-A.kubeconfig
 
+# Kubelet Configuration
+
+cat > kubelet-config-A.yaml <<EOF
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    enabled: true
+  x509:
+    clientCAFile: "/var/lib/kubernetes/ca.pem"
+authorization:
+  mode: Webhook
+clusterDomain: "cluster.local"
+clusterDNS:
+  - "10.32.0.10"
+podCIDR: "10.0.2.0/24"
+resolvConf: "/run/systemd/resolve/resolv.conf"
+runtimeRequestTimeout: "15m"
+tlsCertFile: "/var/lib/kubelet/worker-A.pem"
+tlsPrivateKeyFile: "/var/lib/kubelet/worker-A-key.pem"
+EOF
+
+# Worker B assets generation
+
 cd $CONFIGURE_DIR/kubeconfigs/worker-B/
 
 kubectl config set-cluster kubernetes-the-hard-way \
@@ -214,6 +254,29 @@ kubectl config set-context default \
 
 kubectl config use-context default --kubeconfig=worker-B.kubeconfig
 
+# Kubelet Configuration
+
+cat > kubelet-config-B.yaml <<EOF
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    enabled: true
+  x509:
+    clientCAFile: "/var/lib/kubernetes/ca.pem"
+authorization:
+  mode: Webhook
+clusterDomain: "cluster.local"
+clusterDNS:
+  - "10.32.0.10"
+podCIDR: "10.0.2.0/24"
+resolvConf: "/run/systemd/resolve/resolv.conf"
+runtimeRequestTimeout: "15m"
+tlsCertFile: "/var/lib/kubelet/worker-B.pem"
+tlsPrivateKeyFile: "/var/lib/kubelet/worker-B-key.pem"
+EOF
 
 # Generate encryption-config
 

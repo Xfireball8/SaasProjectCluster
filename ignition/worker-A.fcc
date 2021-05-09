@@ -16,9 +16,15 @@ storage:
     - path: "/var/lib/kubelet/worker-A.kubeconfig"
       contents:
         source: "s3://saasproj/instances/worker-A.kubeconfig"
+    - path: "/var/lib/kubelet/kubelet-config.yaml"
+      contents:
+        source: "s3://saasproj/instances/kubelet-config-A.yaml"
     - path: "/var/lib/kubelet/ca.pem"
       contents:
         source: "s3://saasproj/instances/ca.pem"
-    - path: "/var/lib/kubelet/kube-proxy.kubeconfig"
+    - path: "/var/lib/kube-proxy/kubeconfig"
       contents:
         source: "s3://saasproj/instances/kube-proxy.kubeconfig"
+    - path: "/var/lib/kube-proxy/kube-proxy-config.yaml"
+      contents:
+        source: "s3://saasproj/instances/kube-proxy-config.yaml"

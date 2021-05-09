@@ -196,6 +196,20 @@ resource "aws_s3_bucket_object" "worker_A_kubeconfig" {
   ]
 }
 
+resource "aws_s3_bucket_object" "worker_A_kubelet_config"{
+  bucket = "saasproj"
+  key = "instances/kubelet-config-A.yaml"
+  source = "kubeconfigs/worker-A/kubelet-config-A.yaml"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
 resource "aws_s3_bucket_object" "worker_B_pem" {
   bucket = "saasproj"
   key = "instances/worker-B.pem"
@@ -236,6 +250,20 @@ resource "aws_s3_bucket_object" "worker_B_kubeconfig" {
   ]
 }
 
+resource "aws_s3_bucket_object" "worker_B_kubelet_config"{
+  bucket = "saasproj"
+  key = "instances/kubelet-config-B.yaml"
+  source = "kubeconfigs/worker-B/kubelet-config-B.yaml"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
 resource "aws_s3_bucket_object" "worker_kube-proxy_kubeconfig" {
   bucket = "saasproj"
   key = "instances/kube-proxy.kubeconfig"
@@ -245,6 +273,20 @@ resource "aws_s3_bucket_object" "worker_kube-proxy_kubeconfig" {
     project = "saas"
   }
   
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+resource "aws_s3_bucket_object" "worker_kube-proxy_config" {
+  bucket = "saasproj"
+  key = "instances/kube-proxy-config.yaml"
+  source = "kubeconfigs/kube-proxy-config.yaml"
+
+  tags = {
+    project = "saas"
+  }
+
   depends_on = [
     null_resource.assets_creation
   ]
