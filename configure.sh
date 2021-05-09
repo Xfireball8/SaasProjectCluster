@@ -218,7 +218,7 @@ authentication:
   webhook:
     enabled: true
   x509:
-    clientCAFile: "/var/lib/kubernetes/ca.pem"
+    clientCAFile: "/var/lib/kubelet/ca.pem"
 authorization:
   mode: Webhook
 clusterDomain: "cluster.local"

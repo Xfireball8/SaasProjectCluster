@@ -20,7 +20,7 @@ storage:
     - path: "/var/lib/kubelet/worker-B.pem"
       contents:
         source: "s3://saasproj/instances/worker-B.pem"
-    - path: "/var/lib/kubelet/worker-B.kubeconfig"
+    - path: "/var/lib/kubelet/kubeconfig"
       contents:
         source: "s3://saasproj/instances/worker-B.kubeconfig"
     - path: "/var/lib/kubelet/kubelet-config.yaml"
