@@ -10,6 +10,10 @@ variable "secret_key" {
   type = string
 }
 
-variable "fedora_core_os_ami" {
+variable "kubernetesos_master_ami" {
+  type = string
+}
+
+variable "kubernetesos_worker_ami" {
   type = string
 }
