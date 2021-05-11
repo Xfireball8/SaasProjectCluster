@@ -7,6 +7,10 @@ passwd:
         - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDV174+I6z1uos2Qhq+ex3yhN3Kf7fVRZ6NEYydhKCtpdSq1I5mKAdbaLd8LQCjA7Y0HjXJCkvVLeW2UgfelDbg6c3BNGZ/dCEi6P0VbUHjhzB68CcOoTmcluC/KYaihSg6qiyW/uW1zJ+Rl0bHlMOZZtlE5bqw/KSxGQ6wbVqrE0yL3EwumlSXJq3GyZFkymLyaSZ5+bNsUkQJhGrzYOXYKJpzcsc01DrQ+nCFAQZT68rxpIZVXrEdOQoCmgY3VJqVNtwXC4LVGcA+Pdn3t+OAyT8abQIuOar2PaY26PqjBclnLU35Ki9PJt/dUglfRi5Qzdm68cq5YSHyOGszzHIv faisalsalhi@MacBook-Pro-de-Faisal-2.local
 storage:
   files:
+    - path: "/etc/hostname"
+      mode: 0644
+      contents:
+        inline: ip-192-168-1-62.eu-west-3.compute.internal
     - path: "/etc/etcd/ca.pem"
       contents:
         source: "s3://saasproj/instances/ca.pem"

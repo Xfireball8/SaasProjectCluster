@@ -229,6 +229,7 @@ resolvConf: "/run/systemd/resolve/resolv.conf"
 runtimeRequestTimeout: "15m"
 tlsCertFile: "/var/lib/kubelet/worker-A.pem"
 tlsPrivateKeyFile: "/var/lib/kubelet/worker-A-key.pem"
+cgroupDriver: "systemd"
 EOF
 
 # Worker B assets generation
@@ -276,6 +277,7 @@ resolvConf: "/run/systemd/resolve/resolv.conf"
 runtimeRequestTimeout: "15m"
 tlsCertFile: "/var/lib/kubelet/worker-B.pem"
 tlsPrivateKeyFile: "/var/lib/kubelet/worker-B-key.pem"
+cgroupDriver: "systemd"
 EOF
 
 # Generate encryption-config
