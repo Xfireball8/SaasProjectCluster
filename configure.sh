@@ -27,32 +27,32 @@ cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
 
   # Controller Manager
 cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
--ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
--config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
--profile=kubernetes \
+  -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
+  -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
+  -profile=kubernetes \
 $CONFIGURE_DIR/certs_configuration/kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
 
   # Scheduler
 cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
--ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
--config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
--profile=kubernetes \
+  -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
+  -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
+  -profile=kubernetes \
 $CONFIGURE_DIR/certs_configuration/kube-scheduler-csr.json | cfssljson -bare kube-scheduler
 
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
   # API Server
 cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
--ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
--config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
--profile=kubernetes \
--hostname=10.240.0.1,192.168.1.62,127.0.0.1,${KUBERNETES_HOSTNAMES} \
+  -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
+  -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
+  -profile=kubernetes \
+  -hostname=10.240.0.1,192.168.1.62,127.0.0.1,${KUBERNETES_HOSTNAMES} \
 $CONFIGURE_DIR/certs_configuration/kubernetes-csr.json | cfssljson -bare kubernetes
 
   # k8s Service Account
 cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
--ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
--config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
--profile=kubernetes \
+  -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
+  -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
+  -profile=kubernetes \
 $CONFIGURE_DIR/certs_configuration/service-account-csr.json | cfssljson -bare service-account
 
 #Worker Certs Creation
@@ -61,32 +61,63 @@ cd $CONFIGURE_DIR/pki/
 
   # kube-proxy
 cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
--ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
--config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
--profile=kubernetes \
+  -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
+  -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
+  -profile=kubernetes \
 $CONFIGURE_DIR/certs_configuration/kube-proxy-csr.json | cfssljson -bare kube-proxy
 
   # worker-A kubelet
 cd $CONFIGURE_DIR/pki/worker-A/
 cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
--ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
--config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
--profile=kubernetes \
--hostname=ip-192-168-1-60.eu-west-3.compute.internal,192.168.1.60 \
+  -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
+  -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
+  -profile=kubernetes \
+  -hostname=ip-192-168-1-60.eu-west-3.compute.internal,192.168.1.60 \
 $CONFIGURE_DIR/certs_configuration/worker-A-csr.json | cfssljson -bare worker-A
 
   # worker-B kubelet
 cd $CONFIGURE_DIR/pki/worker-B/
 cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
--ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
--config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
--profile=kubernetes \
--hostname=ip-192-168-1-59.eu-west-3.compute.internal,192.168.1.59 \
+  -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
+  -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
+  -profile=kubernetes \
+  -hostname=ip-192-168-1-59.eu-west-3.compute.internal,192.168.1.59 \
 $CONFIGURE_DIR/certs_configuration/worker-B-csr.json | cfssljson -bare worker-B
 
 #Master Components Kubeconfigs
 
 cd $CONFIGURE_DIR/kubeconfigs/master
+
+# TODO : API Server Service
+
+cat > kube-api-server.service << EOF
+[Unit]
+Description=Kubernetes Component : API Server
+
+[Service]
+ExecStart=/bin/kube-api-server \
+  # General Settings 
+  --advertise-address=192.168.1.62 \
+  --apiserver-count=1 \
+  --bind-address=192.168.1.62 \
+  --secure-port=6443 \
+  --cloud-provider=aws \
+  # Network Settings
+  --service-cluster-ip-range=10.32.0.0/16 \
+  --service-node-port-range=30000-32767 \
+  # Authorization
+  --authorization-mode=Node,RBAC \
+  # Authentication
+  --client-ca-file=/var/lib/kube-apiserver/ca.pem \
+  --tls-cert-file=/var/lib/kube-apiserver/cert.pem \
+  --tls-private-key-file=/var/lib/kube-apiserver/cert-key.pem \
+  # Etcd Settings
+  --etcd-servers=https://192.168.1.62:2379
+Restart=on-failure
+
+[Install]
+WantedBy=kubernetes-ready.target
+EOF
 
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
@@ -106,6 +137,40 @@ kubectl config set-context default \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-controller-manager.kubeconfig
 
 kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconfig
+
+# TODO : Controller Manager Service
+
+cat > kube-controller-manager.service << EOF
+[Unit]
+Description=Kubernetes Component : Controller Manager
+
+[Service]
+ExecStart=/bin/kube-controller-manager \
+  # General Settings
+  --bind-address=192.168.1.62 \
+  --master=192.168.1.62 \
+  --secure-port=6443 \
+  --cloud-provider=aws \
+  --cluster-name=kubernetes \
+  # Network Settings
+  --allocate-node-cidr=true \
+  --configure-cloud-routes=true \
+  --cluster-cidr=10.200.0.0/16 \
+  --service-cluster-ip-range=10.32.0.0/16 \
+  --node-cidr-mask-size=16 \
+  --flex-volume-plugin-dir=/etc/kubernetes/kubelet-plugins/volume/exec/ \
+  # Authentication Settings
+  --client-ca-file=/var/lib/kube-controller-manager/ca.pem \
+  --tls-cert-file=/var/lib/kube-controller-manager/cert.pem \
+  --tls-private-key-file=/var/lib/kube-controller-manager/cert-key.pem \
+  # Authorization Settings
+  --kubeconfig=/var/lib/kube-controller-manager/kubeconfig
+
+Restart=on-failure
+
+[Install]
+WantedBy=kubernetes-ready.target
+EOF
 
   # Scheduler
 
@@ -127,6 +192,29 @@ kubectl config set-context default \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-scheduler.kubeconfig
 
 kubectl config use-context default --kubeconfig=kube-scheduler.kubeconfig
+
+# TODO : Scheduler Service
+
+cat > kube-scheduler.service << EOF
+[Unit]
+Description=Kubernetes Component : Scheduler
+
+[Service]
+ExecStart=/bin/kube-scheduler \
+  # General Settings 
+  --bind-address=192.168.1.62 \
+  --master=192.168.1.62 \
+  # Authorization
+  --config=/var/lib/kube-scheduler/kubeconfig \
+  # Authentication
+  --client-ca-file=/var/lib/kube-scheduler/ca.pem \
+  --tls-cert-file=/var/lib/kube-scheduler/cert.pem \
+  --tls-private-key-file=/var/lib/kube-scheduler/cert-key.pem \
+Restart=on-failure
+
+[Install]
+WantedBy=kubernetes-ready.target
+EOF
 
   # Admin client
 
@@ -154,6 +242,29 @@ kubectl config use-context default --kubeconfig=admin.kubeconfig
 cd $CONFIGURE_DIR/kubeconfigs/
 
 # Kube-proxy Related Stuff 
+
+# TODO : Kube-proxy Services
+
+cat > kube-proxy.service << EOF
+[Unit]
+Description=Kubelet Component : Kube Proxy
+
+[Service]
+ExecStart=/bin/kube-proxy \
+  # General Settings
+  --bind-address=0.0.0.0 \
+  --master=192.168.1.62 \
+  --config=/var/lib/kube-proxy/config
+  # Network Settings
+  --cluster-cidr=10.200.0.0/16 \
+  # Authorization
+  --kubeconfig=/var/lib/kube-proxy/kubeconfig \
+  
+Restart=on-failure
+
+[Install]
+WantedBy=kubernetes-ready.target
+EOF
 
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
@@ -186,6 +297,36 @@ EOF
 
 # Worker A assets generation
 
+# TODO : Kubelet Services
+
+cat > workerA-kubelet.service << EOF
+[Unit]
+Description=Kubelet Worker A
+
+[Service]
+ExecStart=/bin/kubelet \
+  # General Settings
+  --node-ip=192.168.1.60
+  --config=/var/lib/kubelet/config
+  --volume-plugin-dir=/var/lib/kubelet/volume/exec/
+  # Container Runtime Parameter
+  --container-runtime=docker
+  --docker-endpoint=unix://var/run/docker.sock
+  # Networking
+  --cni-bin-dir=/usr/libexec/cni/
+  --cni-conf-dir=/etc/cni/net.d/
+  # Authorization
+  --register-node=true
+  --kubeconfig=/var/lib/kubelet/kubeconfig
+  # Authentication
+  --tls-cert-file=/var/lib/kubelet/cert.pem
+  --tls-private-key-file=/var/lib/kubelet/cert-key.pem
+Restart=on-failure
+
+[Install]
+WantedBy=kubernetes-ready.target
+EOF
+
 cd $CONFIGURE_DIR/kubeconfigs/worker-A/
 
 kubectl config set-cluster kubernetes-the-hard-way \
@@ -194,7 +335,7 @@ kubectl config set-cluster kubernetes-the-hard-way \
   --server=https://192.168.1.62:6443 \
   --kubeconfig=worker-A.kubeconfig
 
-kubectl config set-credentials system:node:worker-A \
+kubectl config set-credentials system:node:ip-192-168-1-60.eu-west-3.compute.internal \
   --client-certificate=$CONFIGURE_DIR/pki/worker-A/worker-A.pem \
   --client-key=$CONFIGURE_DIR/pki/worker-A/worker-A-key.pem \
   --embed-certs=true \
@@ -202,7 +343,7 @@ kubectl config set-credentials system:node:worker-A \
 
 kubectl config set-context default \
   --cluster=kubernetes-the-hard-way \
-  --user=system:node:worker-A  \
+  --user=system:node:ip-192-168-1-60.eu-west-3.compute.internal  \
   --kubeconfig=worker-A.kubeconfig
 
 kubectl config use-context default --kubeconfig=worker-A.kubeconfig
@@ -227,8 +368,8 @@ clusterDNS:
 podCIDR: "10.200.0.0/16"
 resolvConf: "/run/systemd/resolve/resolv.conf"
 runtimeRequestTimeout: "15m"
-tlsCertFile: "/var/lib/kubelet/worker-A.pem"
-tlsPrivateKeyFile: "/var/lib/kubelet/worker-A-key.pem"
+tlsCertFile: "/var/lib/kubelet/cert.pem"
+tlsPrivateKeyFile: "/var/lib/kubelet/cert-key.pem"
 cgroupDriver: "systemd"
 EOF
 
@@ -236,13 +377,38 @@ EOF
 
 cd $CONFIGURE_DIR/kubeconfigs/worker-B/
 
+cat > workerB-kubelet.service << EOF
+[Unit]
+Description=Kubelet Worker B
+
+[Service]
+ExecStart=/bin/kubelet \
+  # General Settings
+  --node-ip=192.168.1.59
+  --config=/var/lib/kubelet/config
+  --volume-plugin-dir=/var/lib/kubelet/volume/exec/
+  # Container Runtime Parameter
+  --container-runtime=docker
+  --docker-endpoint=unix://var/run/docker.sock
+  # Networking
+  --cni-bin-dir=/usr/libexec/cni/
+  --cni-conf-dir=/etc/cni/net.d/
+  # Authorization
+  --register-node=true
+  --kubeconfig=/var/lib/kubelet/kubeconfig
+Restart=on-failure
+
+[Install]
+WantedBy=kubernetes-ready.target
+EOF
+
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
   --server=https://192.168.1.62:6443 \
   --kubeconfig=worker-B.kubeconfig
 
-kubectl config set-credentials system:node:worker-B \
+kubectl config set-credentials system:node:ip-192-168-1-59.eu-west-3.compute.internal \
   --client-certificate=$CONFIGURE_DIR/pki/worker-B/worker-B.pem \
   --client-key=$CONFIGURE_DIR/pki/worker-B/worker-B-key.pem \
   --embed-certs=true \
@@ -250,7 +416,7 @@ kubectl config set-credentials system:node:worker-B \
 
 kubectl config set-context default \
   --cluster=kubernetes-the-hard-way \
-  --user=system:node:worker-B \
+  --user=system:node:ip-192-168-1-59.eu-west-3.compute.internal \
   --kubeconfig=worker-B.kubeconfig
 
 kubectl config use-context default --kubeconfig=worker-B.kubeconfig
@@ -275,8 +441,8 @@ clusterDNS:
 podCIDR: "10.200.0.0/16"
 resolvConf: "/run/systemd/resolve/resolv.conf"
 runtimeRequestTimeout: "15m"
-tlsCertFile: "/var/lib/kubelet/worker-B.pem"
-tlsPrivateKeyFile: "/var/lib/kubelet/worker-B-key.pem"
+tlsCertFile: "/var/lib/kubelet/cert.pem"
+tlsPrivateKeyFile: "/var/lib/kubelet/cert-key.pem"
 cgroupDriver: "systemd"
 EOF
 
