@@ -165,7 +165,6 @@ ExecStart=/bin/kube-controller-manager \
   --tls-private-key-file=/var/lib/kube-controller-manager/cert-key.pem \
   # Authorization Settings
   --kubeconfig=/var/lib/kube-controller-manager/kubeconfig
-
 Restart=on-failure
 
 [Install]
@@ -258,8 +257,7 @@ ExecStart=/bin/kube-proxy \
   # Network Settings
   --cluster-cidr=10.200.0.0/16 \
   # Authorization
-  --kubeconfig=/var/lib/kube-proxy/kubeconfig \
-  
+  --kubeconfig=/var/lib/kube-proxy/kubeconfig \  
 Restart=on-failure
 
 [Install]
@@ -318,9 +316,6 @@ ExecStart=/bin/kubelet \
   # Authorization
   --register-node=true
   --kubeconfig=/var/lib/kubelet/kubeconfig
-  # Authentication
-  --tls-cert-file=/var/lib/kubelet/cert.pem
-  --tls-private-key-file=/var/lib/kubelet/cert-key.pem
 Restart=on-failure
 
 [Install]
