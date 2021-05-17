@@ -46,7 +46,7 @@ cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
   -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
   -profile=kubernetes \
   -hostname=10.240.0.1,192.168.1.62,127.0.0.1,${KUBERNETES_HOSTNAMES} \
-$CONFIGURE_DIR/certs_configuration/kubernetes-csr.json | cfssljson -bare kubernetes
+$CONFIGURE_DIR/certs_configuration/kubernetes-csr.json | cfssljson -bare kube-apiserver
 
   # k8s Service Account
 cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
@@ -73,7 +73,7 @@ cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
   -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
   -profile=kubernetes \
   -hostname=ip-192-168-1-60.eu-west-3.compute.internal,192.168.1.60 \
-$CONFIGURE_DIR/certs_configuration/worker-A-csr.json | cfssljson -bare worker-A
+$CONFIGURE_DIR/certs_configuration/worker-A-csr.json | cfssljson -bare kubelet-A
 
   # worker-B kubelet
 cd $CONFIGURE_DIR/pki/worker-B/
@@ -82,11 +82,41 @@ cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
   -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
   -profile=kubernetes \
   -hostname=ip-192-168-1-59.eu-west-3.compute.internal,192.168.1.59 \
-$CONFIGURE_DIR/certs_configuration/worker-B-csr.json | cfssljson -bare worker-B
+$CONFIGURE_DIR/certs_configuration/worker-B-csr.json | cfssljson -bare kubelet-B
 
 #Master Components Kubeconfigs
 
 cd $CONFIGURE_DIR/kubeconfigs/master
+
+# ETCD Service
+
+cat > etcd.service << EOF
+[Unit]
+Description=etcd
+
+[Service]
+Type=notify
+ExecStart=/bin/etcd \
+  --name ip-192-168-1-62.eu-west-3.compute.internal \
+  --cert-file=/etc/etcd/cert.pem \
+  --key-file=/etc/etcd/cert-key.pem \
+  --peer-cert-file=/etc/etcd/cert.pem \
+  --peer-key-file=/etc/etcd/cert-key.pem \
+  --trusted-ca-file=/etc/etcd/ca.pem \
+  --peer-trusted-ca-file=/etc/etcd/ca.pem \
+  --peer-client-cert-auth \
+  --client-cert-auth \
+  --initial-advertise-peer-urls https://192.168.1.62:2380 \
+  --listen-peer-urls https://102.168.1.62:2380 \
+  --listen-client-urls https://192.168.1.62:2379,https://127.0.0.1:2379 \
+  --advertise-client-urls https://192.168.1.62:2379 \
+  --data-dir=/var/lib/etcd
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
 
 # TODO : API Server Service
 
@@ -297,24 +327,27 @@ EOF
 
 # TODO : Kubelet Services
 
-cat > workerA-kubelet.service << EOF
+
+cd $CONFIGURE_DIR/kubeconfigs/worker-A/
+
+cat > kubelet-A.service << EOF
 [Unit]
 Description=Kubelet Worker A
 
 [Service]
 ExecStart=/bin/kubelet \
   # General Settings
-  --node-ip=192.168.1.60
-  --config=/var/lib/kubelet/config
-  --volume-plugin-dir=/var/lib/kubelet/volume/exec/
+  --node-ip=192.168.1.60 \
+  --config=/var/lib/kubelet/config \
+  --volume-plugin-dir=/var/lib/kubelet/volume/exec/ \
   # Container Runtime Parameter
-  --container-runtime=docker
-  --docker-endpoint=unix://var/run/docker.sock
+  --container-runtime=docker \
+  --docker-endpoint=unix://var/run/docker.sock \
   # Networking
-  --cni-bin-dir=/usr/libexec/cni/
-  --cni-conf-dir=/etc/cni/net.d/
+  --cni-bin-dir=/usr/libexec/cni/ \
+  --cni-conf-dir=/etc/cni/net.d/ \
   # Authorization
-  --register-node=true
+  --register-node=true \
   --kubeconfig=/var/lib/kubelet/kubeconfig
 Restart=on-failure
 
@@ -322,30 +355,28 @@ Restart=on-failure
 WantedBy=kubernetes-ready.target
 EOF
 
-cd $CONFIGURE_DIR/kubeconfigs/worker-A/
-
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
   --server=https://192.168.1.62:6443 \
-  --kubeconfig=worker-A.kubeconfig
+  --kubeconfig=kubelet-A.kubeconfig
 
 kubectl config set-credentials system:node:ip-192-168-1-60.eu-west-3.compute.internal \
   --client-certificate=$CONFIGURE_DIR/pki/worker-A/worker-A.pem \
   --client-key=$CONFIGURE_DIR/pki/worker-A/worker-A-key.pem \
   --embed-certs=true \
-  --kubeconfig=worker-A.kubeconfig
+  --kubeconfig=kubelet-A.kubeconfig
 
 kubectl config set-context default \
   --cluster=kubernetes-the-hard-way \
   --user=system:node:ip-192-168-1-60.eu-west-3.compute.internal  \
-  --kubeconfig=worker-A.kubeconfig
+  --kubeconfig=kubelet-A.kubeconfig
 
-kubectl config use-context default --kubeconfig=worker-A.kubeconfig
+kubectl config use-context default --kubeconfig=kubelet-A.kubeconfig
 
 # Kubelet Configuration
 
-cat > kubelet-config-A.yaml <<EOF
+cat > kubelet-A.config <<EOF
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
 authentication:
@@ -372,24 +403,24 @@ EOF
 
 cd $CONFIGURE_DIR/kubeconfigs/worker-B/
 
-cat > workerB-kubelet.service << EOF
+cat > kubelet-B.service << EOF
 [Unit]
 Description=Kubelet Worker B
 
 [Service]
 ExecStart=/bin/kubelet \
   # General Settings
-  --node-ip=192.168.1.59
-  --config=/var/lib/kubelet/config
-  --volume-plugin-dir=/var/lib/kubelet/volume/exec/
+  --node-ip=192.168.1.59 \
+  --config=/var/lib/kubelet/config \
+  --volume-plugin-dir=/var/lib/kubelet/volume/exec/ \
   # Container Runtime Parameter
-  --container-runtime=docker
-  --docker-endpoint=unix://var/run/docker.sock
+  --container-runtime=docker \
+  --docker-endpoint=unix://var/run/docker.sock \
   # Networking
-  --cni-bin-dir=/usr/libexec/cni/
-  --cni-conf-dir=/etc/cni/net.d/
+  --cni-bin-dir=/usr/libexec/cni/ \
+  --cni-conf-dir=/etc/cni/net.d/ \
   # Authorization
-  --register-node=true
+  --register-node=true \
   --kubeconfig=/var/lib/kubelet/kubeconfig
 Restart=on-failure
 
@@ -401,24 +432,24 @@ kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
   --server=https://192.168.1.62:6443 \
-  --kubeconfig=worker-B.kubeconfig
+  --kubeconfig=kubelet-B.kubeconfig
 
 kubectl config set-credentials system:node:ip-192-168-1-59.eu-west-3.compute.internal \
   --client-certificate=$CONFIGURE_DIR/pki/worker-B/worker-B.pem \
   --client-key=$CONFIGURE_DIR/pki/worker-B/worker-B-key.pem \
   --embed-certs=true \
-  --kubeconfig=worker-B.kubeconfig
+  --kubeconfig=kubelet-B.kubeconfig
 
 kubectl config set-context default \
   --cluster=kubernetes-the-hard-way \
   --user=system:node:ip-192-168-1-59.eu-west-3.compute.internal \
-  --kubeconfig=worker-B.kubeconfig
+  --kubeconfig=kubelet-B.kubeconfig
 
-kubectl config use-context default --kubeconfig=worker-B.kubeconfig
+kubectl config use-context default --kubeconfig=kubelet-B.kubeconfig
 
 # Kubelet Configuration
 
-cat > kubelet-config-B.yaml <<EOF
+cat > kubelet-B.config <<EOF
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
 authentication:

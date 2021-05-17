@@ -11,24 +11,31 @@ storage:
       mode: 0644
       contents:
         inline: ip-192-168-1-59.eu-west-3.compute.internal
-    - path: "/var/lib/kubelet/worker-B-key.pem"
+    - path: "/var/lib/kubelet/cert-key.pem"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/worker-B-key.pem"
-    - path: "/var/lib/kubelet/worker-B.pem"
+        source: "s3://saasproj/instances/kubelet-B-key.pem"
+    - path: "/var/lib/kubelet/cert.pem"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/worker-B.pem"
+        source: "s3://saasproj/instances/kubelet-B.pem"
     - path: "/var/lib/kubelet/kubeconfig"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/worker-B.kubeconfig"
-    - path: "/var/lib/kubelet/kubelet-config.yaml"
+        source: "s3://saasproj/instances/kubelet-B.kubeconfig"
+    - path: "/var/lib/kubelet/config"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/kubelet-config-B.yaml"
+        source: "s3://saasproj/instances/kubelet-B.config"
     - path: "/var/lib/kubelet/ca.pem"
+      mode: 0644
       contents:
         source: "s3://saasproj/instances/ca.pem"
     - path: "/var/lib/kube-proxy/kubeconfig"
+      mode: 0644
       contents:
         source: "s3://saasproj/instances/kube-proxy.kubeconfig"
-    - path: "/var/lib/kube-proxy/kube-proxy-config.yaml"
+    - path: "/var/lib/kube-proxy/config"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/kube-proxy-config.yaml"
+        source: "s3://saasproj/instances/kube-proxy.config"

@@ -19,187 +19,215 @@ resource "aws_s3_bucket_object" "master_ca_pem" {
   ]
 }
 
-resource "aws_s3_bucket_object" "master_ca_key_pem" {
-  bucket = "saasproj"
-  key = "instances/ca-key.pem"
-  source = "pki/ca/ca-key.pem"
-
-  tags ={
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
 ###### MASTER CERTS #####
 
-resource "aws_s3_bucket_object" "admin_kubeconfig" {
+###### ETCD SERVICE #######
+
+resource "aws_s3_bucket_object" "etcd-service" {
   bucket = "saasproj"
-  key = "instances/admin.kubeconfig"
-  source = "kubeconfigs/master/admin.kubeconfig"
-
-  tags ={
-    project = "saas"
-  }
-
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
-resource "aws_s3_bucket_object" "master_kubernetes_pem" {
-  bucket = "saasproj"
-  key = "instances/kubernetes.pem"
-  source = "pki/master/kubernetes.pem"
-
-  tags ={
-    project = "saas"
-  }
+  key = "instances/etcd.service"
+  source = "kubeconfigs/master/etcd.service"
   
+  tags = {
+    project = "saas"
+  }
+
   depends_on = [
     null_resource.assets_creation
   ]
 }
 
-resource "aws_s3_bucket_object" "master_kubernetes_key_pem" {
+###########################
+
+#### API SERVER SERVICE ######
+
+resource "aws_s3_bucket_object" "kube-apiserver-service" {
   bucket = "saasproj"
-  key = "instances/kubernetes-key.pem"
-  source = "pki/master/kubernetes-key.pem"
+  key = "instances/kube-apiserver.service"
+  source = "kubeconfigs/master/kube-apiserver.service"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+##############################
+
+# API SERVER AUTHENTICATION #
+
+resource "aws_s3_bucket_object" "kube-apiserver-cert-pem" {
+  bucket = "saasproj"
+  key = "instances/kube-apiserver.pem"
+  source = "pki/master/kube-apiserver.pem"
 
   tags ={
     project = "saas"
   }
-  
+
   depends_on = [
     null_resource.assets_creation
   ]
 }
 
-resource "aws_s3_bucket_object" "master_service-account_pem" {
+resource "aws_s3_bucket_object" "kube-apiserver-cert-key-pem" {
   bucket = "saasproj"
-  key = "instances/service-account.pem"
-  source = "pki/master/service-account.pem"
+  key = "instances/kube-apiserver-key.pem"
+  source = "pki/master/kube-apiserver-key.pem"
 
-  tags ={
+  tags = {
     project = "saas"
   }
-  
+
   depends_on = [
     null_resource.assets_creation
   ]
 }
+########## END ####################
 
-resource "aws_s3_bucket_object" "master_service-account_key_pem" {
+#### CONTROLLER MANAGER SERVICE ######
+
+resource "aws_s3_bucket_object" "kube-controller-manager-service" {
   bucket = "saasproj"
-  key = "instances/service-account-key.pem"
-  source = "pki/master/service-account-key.pem"
+  key = "instances/kube-controller-manager.service"
+  source = "kubeconfigs/master/kube-controller-manager.service"
 
-  tags ={
+  tags = {
     project = "saas"
   }
-  
+
   depends_on = [
     null_resource.assets_creation
   ]
 }
 
-####### MASTER KUBECONFIGS #####
+##############################
 
+# CONTROLLER MANAGER AUTHENTICATION #
 
-resource "aws_s3_bucket_object" "master_encryption-config_yaml" {
+resource "aws_s3_bucket_object" "kube-controller-manager-pem" {
   bucket = "saasproj"
-  key = "instances/encryption-config.yaml"
-  source = "encryption/encryption-config.yaml"
+  key = "instances/kube-controller-manager.pem" 
+  source = "pki/master/kube-controller-manager.pem"
 
-  tags ={
+  tags = {
     project = "saas"
   }
-  
+
   depends_on = [
     null_resource.assets_creation
   ]
 }
 
-resource "aws_s3_bucket_object" "master_controller-manager_kubeconfig" {
+resource "aws_s3_bucket_object" "kube-controller-manager-key-pem" {
+  bucket = "saasproj"
+  key = "instances/kube-controller-manager-key.pem" 
+  source = "pki/master/kube-controller-manager-key.pem"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+########## END ####################
+
+### CONTROLLER MANAGER AUTHORIZATON ##
+
+resource "aws_s3_bucket_object" "kube-controller-manager-kubeconfig" {
   bucket = "saasproj"
   key = "instances/kube-controller-manager.kubeconfig"
   source = "kubeconfigs/master/kube-controller-manager.kubeconfig"
 
-  tags ={
+  tags = {
     project = "saas"
   }
-  
+
   depends_on = [
     null_resource.assets_creation
   ]
 }
 
+######################################
 
-resource "aws_s3_bucket_object" "master_kube-scheduler_kubeconfig" {
+#### KUBE SCHEDULER SERVICE ######
+
+resource "aws_s3_bucket_object" "kube-scheduler-service" {
+  bucket = "saasproj"
+  key = "instances/kube-scheduler.service"
+  source = "kubeconfigs/master/kube-scheduler.service"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+##############################
+
+# KUBE SCHEDULER AUTHENTICATION #
+
+resource "aws_s3_bucket_object" "kube-scheduler-pem" {
+  bucket = "saasproj"
+  key = "instances/kube-scheduler.pem"
+  source = "pki/master/kube-scheduler.pem"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+resource "aws_s3_bucket_object" "kube-scheduler-key-pem" {
+  bucket = "saasproj"
+  key = "instances/kube-scheduler-key.pem"
+  source = "pki/master/kube-scheduler-key.pem"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+########## END ####################
+
+##### KUBE SCHEDULER AUTHORIZATION #####
+
+resource "aws_s3_bucket_object" "kube-scheduler-kubeconfig" {
   bucket = "saasproj"
   key = "instances/kube-scheduler.kubeconfig"
   source = "kubeconfigs/master/kube-scheduler.kubeconfig"
 
-  tags ={
+  tags = {
     project = "saas"
   }
-  
+
   depends_on = [
     null_resource.assets_creation
   ]
 }
 
-####### WORKER CERTS ####
+########################################
 
-resource "aws_s3_bucket_object" "worker_A_pem" {
+########### KUBE PROXY SERVICE #########
+
+resource "aws_s3_bucket_object" "kube-proxy-service" {
   bucket = "saasproj"
-  key = "instances/worker-A.pem"
-  source = "pki/worker-A/worker-A.pem"
-
-  tags ={
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
-resource "aws_s3_bucket_object" "worker_A_key_pem" {
-  bucket = "saasproj"
-  key = "instances/worker-A-key.pem"
-  source = "pki/worker-A/worker-A-key.pem"
-
-
-  tags ={
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
-resource "aws_s3_bucket_object" "worker_A_kubeconfig" {
-  bucket = "saasproj"
-  key = "instances/worker-A.kubeconfig"
-  source = "kubeconfigs/worker-A/worker-A.kubeconfig"
-
-  tags ={
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
-resource "aws_s3_bucket_object" "worker_A_kubelet_config"{
-  bucket = "saasproj"
-  key = "instances/kubelet-config-A.yaml"
-  source = "kubeconfigs/worker-A/kubelet-config-A.yaml"
+  key = "instances/kube-proxy.service"
+  source = "kubeconfigs/kube-proxy.service"
 
   tags = {
     project = "saas"
@@ -210,50 +238,10 @@ resource "aws_s3_bucket_object" "worker_A_kubelet_config"{
   ]
 }
 
-resource "aws_s3_bucket_object" "worker_B_pem" {
+resource "aws_s3_bucket_object" "kube-proxy-config" {
   bucket = "saasproj"
-  key = "instances/worker-B.pem"
-  source = "pki/worker-B/worker-B.pem"
-
-
-  tags ={
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
-resource "aws_s3_bucket_object" "worker_B_key_pem" {
-  bucket = "saasproj"
-  key = "instances/worker-B-key.pem"
-  source = "pki/worker-B/worker-B-key.pem"
-
-  tags ={
-    project = "saas"
-  }
-}
-
-resource "aws_s3_bucket_object" "worker_B_kubeconfig" {
-  bucket = "saasproj"
-  key = "instances/worker-B.kubeconfig"
-  source = "kubeconfigs/worker-B/worker-B.kubeconfig"
-
-
-  tags ={
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
-resource "aws_s3_bucket_object" "worker_B_kubelet_config"{
-  bucket = "saasproj"
-  key = "instances/kubelet-config-B.yaml"
-  source = "kubeconfigs/worker-B/kubelet-config-B.yaml"
+  key = "instances/kube-proxy.config"
+  source = "kubeconfigs/kube-proxy.config"
 
   tags = {
     project = "saas"
@@ -264,25 +252,15 @@ resource "aws_s3_bucket_object" "worker_B_kubelet_config"{
   ]
 }
 
-resource "aws_s3_bucket_object" "worker_kube-proxy_kubeconfig" {
+########################################
+
+######  KUBE PROXY AUTHORIZATION #######
+
+resource "aws_s3_bucket_object" "kube-proxy-kubeconfig" {
   bucket = "saasproj"
   key = "instances/kube-proxy.kubeconfig"
   source = "kubeconfigs/kube-proxy.kubeconfig"
 
-  tags ={
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
-resource "aws_s3_bucket_object" "worker_kube-proxy_config" {
-  bucket = "saasproj"
-  key = "instances/kube-proxy-config.yaml"
-  source = "kubeconfigs/kube-proxy-config.yaml"
-
   tags = {
     project = "saas"
   }
@@ -291,3 +269,169 @@ resource "aws_s3_bucket_object" "worker_kube-proxy_config" {
     null_resource.assets_creation
   ]
 }
+
+########################################
+
+###### KUBELET A SERVICE ###############
+
+resource "aws_s3_bucket_object" "kubelet-A-service" {
+  bucket = "saasproj"
+  key = "instances/kubelet-A.service"
+  source = "kubeconfigs/worker-A/kubelet-A.service"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+resource "aws_s3_bucket_object" "kubelet-A-config" {
+  bucket = "saasproj"
+  key = "instances/kubelet-A.config"
+  source = "kubeconfigs/worker-A/kubelet-A.config"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+########################################
+
+###### KUBELET A AUTHENTICATION ########
+
+resource "aws_s3_bucket_object" "kubelet-A-pem" {
+  bucket = "saasproj"
+  key = "instances/kubelet-A.pem"
+  source = "pki/worker-A/kubelet-A.pem"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+resource "aws_s3_bucket_object" "kubelet-A-key-pem" {
+  bucket = "saasproj"
+  key = "instances/kubelet-A-key.pem"
+  source = "pki/worker-A/kubelet-A-key.pem"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+########################################
+
+###### KUBELET A AUTHORIZATION #########
+
+resource "aws_s3_bucket_object" "kubelet-A-kubeconfig" {
+  bucket = "saasproj"
+  key = "instances/kubelet-A.kubeconfig"
+  source = "kubeconfigs/worker-A/kubelet-A.kubeconfig"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+########################################
+
+
+###### KUBELET B SERVICE ###############
+
+resource "aws_s3_bucket_object" "kubelet-B-service" {
+  bucket = "saasproj"
+  key = "instances/kubelet-B.service"
+  source = "kubeconfigs/worker-B/kubelet-B.service"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+resource "aws_s3_bucket_object" "kubelet-B-config" {
+  bucket = "saasproj"
+  key = "instances/kubelet-B.config"
+  source = "kubeconfigs/worker-B/kubelet-B.config"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+########################################
+
+###### KUBELET B AUTHENTICATION ########
+
+resource "aws_s3_bucket_object" "kubelet-B-pem" {
+  bucket = "saasproj"
+  key = "instances/kubelet-B.pem"
+  source = "pki/worker-B/kubelet-B.pem"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+resource "aws_s3_bucket_object" "kubelet-B-key-pem" {
+  bucket = "saasproj"
+  key = "instances/kubelet-B-key.pem"
+  source = "pki/worker-B/kubelet-B-key.pem"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+########################################
+
+###### KUBELET B AUTHORIZATION #########
+
+resource "aws_s3_bucket_object" "kubelet-B-kubeconfig" {
+  bucket = "saasproj"
+  key = "instances/kubelet-B.kubeconfig"
+  source = "kubeconfigs/worker-B/kubelet-B.kubeconfig"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+########################################

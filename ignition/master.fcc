@@ -11,42 +11,75 @@ storage:
       mode: 0644
       contents:
         inline: ip-192-168-1-62.eu-west-3.compute.internal
+    - path: "/usr/lib/systemd/system/etcd.service"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/etcd.service"
     - path: "/etc/etcd/ca.pem"
+      mode: 0644
       contents:
         source: "s3://saasproj/instances/ca.pem"
-    - path: "/etc/etcd/kubernetes.pem"
+    - path: "/etc/etcd/cert.pem"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/kubernetes.pem" 
-    - path: "/etc/etcd/kubernetes-key.pem"
+        source: "s3://saasproj/instances/kube-apiserver.pem" 
+    - path: "/etc/etcd/cert-key.pem"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/kubernetes-key.pem"
-    - path: "/var/lib/kubelet/ca.pem"
+        source: "s3://saasproj/instances/kube-apiserver-key.pem"
+    - path: "/usr/lib/systemd/system/kube-apiserver.service"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/kube-apiserver.service"
+    - path: "/var/lib/kube-apiserver/ca.pem"
+      mode: 0644
       contents:
         source: "s3://saasproj/instances/ca.pem"
-    - path: "/var/lib/kubelet/ca-key.pem"
+    - path: "/var/lib/kube-apiserver/cert.pem"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/ca-key.pem"
-    - path: "/var/lib/kubelet/kubernetes-key.pem"
+        source: "s3://saasproj/instances/kube-apiserver.pem"
+    - path: "/var/lib/kube-apiserver/cert-key.pem"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/kubernetes-key.pem"
-    - path: "/var/lib/kubelet/kubernetes.pem"
+        source: "s3://saasproj/instances/kube-apiserver-key.pem"
+    - path: "/usr/lib/systemd/system/kube-controller-manager.service"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/kubernetes.pem"
-    - path: "/var/lib/kubelet/service-account-key.pem"
+        source: "s3://saasproj/instances/kube-controller-manager.service"
+    - path: "/var/lib/kube-controller-manager/ca.pem"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/service-account-key.pem"
-    - path: "/var/lib/kubelet/service-account.pem"
+        source: "s3://saasproj/instances/ca.pem"
+    - path: "/var/lib/kube-controller-manager/cert.pem"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/service-account.pem"
-    - path: "/var/lib/kubelet/encryption-config.yaml"
+        source: "s3://saasproj/instances/kube-controller-manager.pem"
+    - path: "/var/lib/kube-controller-manager/cert-key.pem"
+      mode: 0644
       contents:
-        source: "s3://saasproj/instances/encryption-config.yaml"
-    - path: "/var/lib/kubelet/kube-controller-manager.kubeconfig"
+        source: "s3://saasproj/instances/kube-controller-manager-key.pem"
+    - path: "/var/lib/kube-controller-manager/kubeconfig"
+      mode: 0644
       contents:
         source: "s3://saasproj/instances/kube-controller-manager.kubeconfig"
-    - path: "/var/lib/kubelet/kube-scheduler.kubeconfig"
+    - path: "/usr/lib/systemd/system/kube-scheduler.service"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/kube-scheduler.service"
+    - path: "/var/lib/kube-scheduler/ca.pem"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/ca.pem"
+    - path: "/var/lib/kube-scheduler/cert.pem"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/kube-scheduler.pem"
+    - path: "/var/lib/kube-scheduler/cert-key.pem"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/kube-scheduler-key.pem"
+    - path: "/var/lib/kube-scheduler/kubeconfig"
+      mode: 0644
       contents:
         source: "s3://saasproj/instances/kube-scheduler.kubeconfig"
-    - path: "/home/core/.kube/config"
-      contents:
-        source: "s3://saasproj/instances/admin.kubeconfig"
