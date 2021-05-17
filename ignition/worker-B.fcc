@@ -7,21 +7,42 @@ passwd:
         - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDV174+I6z1uos2Qhq+ex3yhN3Kf7fVRZ6NEYydhKCtpdSq1I5mKAdbaLd8LQCjA7Y0HjXJCkvVLeW2UgfelDbg6c3BNGZ/dCEi6P0VbUHjhzB68CcOoTmcluC/KYaihSg6qiyW/uW1zJ+Rl0bHlMOZZtlE5bqw/KSxGQ6wbVqrE0yL3EwumlSXJq3GyZFkymLyaSZ5+bNsUkQJhGrzYOXYKJpzcsc01DrQ+nCFAQZT68rxpIZVXrEdOQoCmgY3VJqVNtwXC4LVGcA+Pdn3t+OAyT8abQIuOar2PaY26PqjBclnLU35Ki9PJt/dUglfRi5Qzdm68cq5YSHyOGszzHIv faisalsalhi@MacBook-Pro-de-Faisal-2.local
 systemd:
   units:
-  - name: kube-proxy.service
-    enabled: true
-  - name: kubelet.service
-    enabled: true
+    - name: kube-proxy.service
+      contents: |
+        [Unit]
+        Description=Kubelet Component : Kube Proxy
+        
+        [Service]
+        ExecStart=/bin/kube-proxy   # General Settings
+          --bind-address=0.0.0.0   --master=192.168.1.62   --config=/var/lib/kube-proxy/config
+          # Network Settings
+          --cluster-cidr=10.200.0.0/16   # Authorization
+          --kubeconfig=/var/lib/kube-proxy/kubeconfig \  
+        Restart=on-failure
+        
+        [Install]
+        WantedBy=kubernetes-ready.target
+    - name: kubelet.service
+      contents: |
+        [Unit]
+        Description=Kubelet Worker B
+        
+        [Service]
+        ExecStart=/bin/kubelet   # General Settings
+          --node-ip=192.168.1.59   --config=/var/lib/kubelet/config   --volume-plugin-dir=/var/lib/kubelet/volume/exec/   # Container Runtime Parameter
+          --container-runtime=docker   --docker-endpoint=unix://var/run/docker.sock   # Networking
+          --cni-bin-dir=/usr/libexec/cni/   --cni-conf-dir=/etc/cni/net.d/   # Authorization
+          --register-node=true   --kubeconfig=/var/lib/kubelet/kubeconfig
+        Restart=on-failure
+        
+        [Install]
+        WantedBy=kubernetes-ready.target
 storage:
   files:
     - path: "/etc/hostname"
       mode: 0644
       contents:
         inline: ip-192-168-1-59.eu-west-3.compute.internal
-    - path: "/usr/lib/systemd/system/kubelet.service"
-      mode: 0644
-      overwrite: true
-      contents: 
-        source: "s3://saasproj/instances/kubelet-B.service"
     - path: "/var/lib/kubelet/cert-key.pem"
       mode: 0644
       contents:
@@ -42,11 +63,6 @@ storage:
       mode: 0644
       contents:
         source: "s3://saasproj/instances/ca.pem"
-    - path: "/usr/lib/systemd/system/kube-proxy.service"
-      mode: 0644
-      overwrite: true
-      contents:
-        source: "s3://saasproj/instances/kube-proxy.service"
     - path: "/var/lib/kube-proxy/kubeconfig"
       mode: 0644
       contents:
