@@ -238,7 +238,7 @@ resource "aws_s3_bucket_object" "kube-proxy-service" {
   ]
 }
 
-resource "aws_s3_bucket_object" "kube-proxy-config" {
+resource "aws_s3_bucket_object" "kube-proxy-config"{
   bucket = "saasproj"
   key = "instances/kube-proxy.config"
   source = "kubeconfigs/kube-proxy.config"
@@ -256,7 +256,7 @@ resource "aws_s3_bucket_object" "kube-proxy-config" {
 
 ######  KUBE PROXY AUTHORIZATION #######
 
-resource "aws_s3_bucket_object" "kube-proxy-kubeconfig" {
+resource "aws_s3_bucket_object" "kube-proxy-kubeconfig"{
   bucket = "saasproj"
   key = "instances/kube-proxy.kubeconfig"
   source = "kubeconfigs/kube-proxy.kubeconfig"
@@ -274,7 +274,7 @@ resource "aws_s3_bucket_object" "kube-proxy-kubeconfig" {
 
 ###### KUBELET A SERVICE ###############
 
-resource "aws_s3_bucket_object" "kubelet-A-service" {
+resource "aws_s3_bucket_object" "kubelet-A-service"{
   bucket = "saasproj"
   key = "instances/kubelet-A.service"
   source = "kubeconfigs/worker-A/kubelet-A.service"

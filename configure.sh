@@ -120,7 +120,7 @@ EOF
 
 # TODO : API Server Service
 
-cat > kube-api-server.service << EOF
+cat > kube-apiserver.service << EOF
 [Unit]
 Description=Kubernetes Component : API Server
 
@@ -314,7 +314,7 @@ kubectl config set-context default \
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 
 # Kube-proxy config yaml file
-cat > kube-proxy-config.yaml <<EOF
+cat > kube-proxy.config <<EOF
 kind: KubeProxyConfiguration
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 clientConnection:
