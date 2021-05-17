@@ -125,11 +125,11 @@ cat > kube-apiserver.service << EOF
 Description=Kubernetes Component : API Server
 
 [Service]
-ExecStart=/bin/kube-api-server \
+ExecStart=/bin/kube-apiserver \
   # General Settings 
   --advertise-address=192.168.1.62 \
   --apiserver-count=1 \
-  --bind-address=192.168.1.62 \
+  --bind-address=127.0.0.1 \
   --secure-port=6443 \
   --cloud-provider=aws \
   # Network Settings
@@ -149,7 +149,7 @@ Restart=on-failure
 WantedBy=kubernetes-ready.target
 EOF
 
-kubectl config set-cluster kubernetes-the-hard-way \
+kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
   --server=https://127.0.0.1:6443 \
@@ -162,7 +162,7 @@ kubectl config set-credentials system:kube-controller-manager \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-controller-manager.kubeconfig
 
 kubectl config set-context default \
-  --cluster=kubernetes-the-hard-way \
+  --cluster=kubernetes \
   --user=system:kube-controller-manager \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-controller-manager.kubeconfig
 
@@ -177,9 +177,8 @@ Description=Kubernetes Component : Controller Manager
 [Service]
 ExecStart=/bin/kube-controller-manager \
   # General Settings
-  --bind-address=192.168.1.62 \
-  --master=192.168.1.62 \
-  --secure-port=6443 \
+  --bind-address=0.0.0.0 \
+  --master=127.0.0.1:6443 \
   --cloud-provider=aws \
   --cluster-name=kubernetes \
   # Network Settings
@@ -203,7 +202,7 @@ EOF
 
   # Scheduler
 
-kubectl config set-cluster kubernetes-the-hard-way \
+kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
   --server=https://127.0.0.1:6443 \
@@ -216,7 +215,7 @@ kubectl config set-credentials system:kube-scheduler \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-scheduler.kubeconfig
 
 kubectl config set-context default \
-  --cluster=kubernetes-the-hard-way \
+  --cluster=kubernetes \
   --user=system:kube-scheduler \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-scheduler.kubeconfig
 
@@ -231,8 +230,8 @@ Description=Kubernetes Component : Scheduler
 [Service]
 ExecStart=/bin/kube-scheduler \
   # General Settings 
-  --bind-address=192.168.1.62 \
-  --master=192.168.1.62 \
+  --bind-address=0.0.0.0 \
+  --master=127.0.0.1:6443 \
   # Authorization
   --config=/var/lib/kube-scheduler/kubeconfig \
   # Authentication
@@ -247,7 +246,7 @@ EOF
 
   # Admin client
 
-kubectl config set-cluster kubernetes-the-hard-way \
+kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
   --server=https://127.0.0.1:6443 \
@@ -260,7 +259,7 @@ kubectl config set-credentials admin \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/admin.kubeconfig
 
 kubectl config set-context default \
-  --cluster=kubernetes-the-hard-way \
+  --cluster=kubernetes \
   --user=admin \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/admin.kubeconfig
 
@@ -294,7 +293,7 @@ Restart=on-failure
 WantedBy=kubernetes-ready.target
 EOF
 
-kubectl config set-cluster kubernetes-the-hard-way \
+kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
   --server=https://192.168.1.62:6443 \
@@ -307,7 +306,7 @@ kubectl config set-credentials system:kube-proxy \
   --kubeconfig=kube-proxy.kubeconfig
 
 kubectl config set-context default \
-  --cluster=kubernetes-the-hard-way \
+  --cluster=kubernetes \
   --user=system:kube-proxy \
   --kubeconfig=kube-proxy.kubeconfig \
 
@@ -355,7 +354,7 @@ Restart=on-failure
 WantedBy=kubernetes-ready.target
 EOF
 
-kubectl config set-cluster kubernetes-the-hard-way \
+kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
   --server=https://192.168.1.62:6443 \
@@ -368,7 +367,7 @@ kubectl config set-credentials system:node:ip-192-168-1-60.eu-west-3.compute.int
   --kubeconfig=kubelet-A.kubeconfig
 
 kubectl config set-context default \
-  --cluster=kubernetes-the-hard-way \
+  --cluster=kubernetes \
   --user=system:node:ip-192-168-1-60.eu-west-3.compute.internal  \
   --kubeconfig=kubelet-A.kubeconfig
 
@@ -428,7 +427,7 @@ Restart=on-failure
 WantedBy=kubernetes-ready.target
 EOF
 
-kubectl config set-cluster kubernetes-the-hard-way \
+kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
   --server=https://192.168.1.62:6443 \
@@ -441,7 +440,7 @@ kubectl config set-credentials system:node:ip-192-168-1-59.eu-west-3.compute.int
   --kubeconfig=kubelet-B.kubeconfig
 
 kubectl config set-context default \
-  --cluster=kubernetes-the-hard-way \
+  --cluster=kubernetes \
   --user=system:node:ip-192-168-1-59.eu-west-3.compute.internal \
   --kubeconfig=kubelet-B.kubeconfig
 

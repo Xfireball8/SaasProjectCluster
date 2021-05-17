@@ -19,6 +19,25 @@ resource "aws_s3_bucket_object" "master_ca_pem" {
   ]
 }
 
+##### ADMIN CONFIG #####
+
+resource "aws_s3_bucket_object" "admin-kubeconfig" {
+  bucket = "saasproj"
+  key = "instances/admin.kubeconfig"
+  source = "kubeconfigs/master/admin.kubeconfig"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+########################
+
+
 ###### MASTER CERTS #####
 
 ###### ETCD SERVICE #######
