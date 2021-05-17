@@ -10,7 +10,12 @@ storage:
     - path: "/etc/hostname"
       mode: 0644
       contents:
-        inline: ip-192-168-1-60.eu-west-3.compute.internal
+        inline: ip-192-168-1-60.eu-west-3.compute.internal 
+    - path: "/usr/lib/systemd/system/kubelet.service"
+      mode: 0644
+      overwrite: true
+      contents: 
+        source: "s3://saasproj/instances/kubelet-A.service"
     - path: "/var/lib/kubelet/cert-key.pem"
       mode: 0644
       contents:
@@ -31,6 +36,11 @@ storage:
       mode: 0644
       contents:
         source: "s3://saasproj/instances/ca.pem"
+    - path: "/usr/lib/systemd/system/kube-proxy.service"
+      mode: 0644
+      overwrite: true
+      contents:
+        source: "s3://saasproj/instances/kube-proxy.service"
     - path: "/var/lib/kube-proxy/kubeconfig"
       mode: 0644
       contents:
