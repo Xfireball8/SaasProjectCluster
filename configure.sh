@@ -45,7 +45,7 @@ cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
   -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
   -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
   -profile=kubernetes \
-  -hostname=10.240.0.1,192.168.1.62,127.0.0.1,${KUBERNETES_HOSTNAMES} \
+  -hostname=10.200.0.1,192.168.1.62,127.0.0.1,${KUBERNETES_HOSTNAMES} \
 $CONFIGURE_DIR/certs_configuration/kubernetes-csr.json | cfssljson -bare kube-apiserver
 
   # k8s Service Account
@@ -107,7 +107,7 @@ ExecStart=/bin/etcd \
   --peer-client-cert-auth \
   --client-cert-auth \
   --initial-advertise-peer-urls https://192.168.1.62:2380 \
-  --listen-peer-urls https://102.168.1.62:2380 \
+  --listen-peer-urls https://192.168.1.62:2380 \
   --listen-client-urls https://192.168.1.62:2379,https://127.0.0.1:2379 \
   --advertise-client-urls https://192.168.1.62:2379 \
   --data-dir=/var/lib/etcd
@@ -361,14 +361,14 @@ kubectl config set-cluster kubernetes \
   --kubeconfig=kubelet-A.kubeconfig
 
 kubectl config set-credentials system:node:ip-192-168-1-60.eu-west-3.compute.internal \
-  --client-certificate=$CONFIGURE_DIR/pki/worker-A/worker-A.pem \
-  --client-key=$CONFIGURE_DIR/pki/worker-A/worker-A-key.pem \
+  --client-certificate=$CONFIGURE_DIR/pki/worker-A/kubelet-A.pem \
+  --client-key=$CONFIGURE_DIR/pki/worker-A/kubelet-A-key.pem \
   --embed-certs=true \
   --kubeconfig=kubelet-A.kubeconfig
 
 kubectl config set-context default \
   --cluster=kubernetes \
-  --user=system:node:ip-192-168-1-60.eu-west-3.compute.internal  \
+  --user=system:node:ip-192-168-1-60.eu-west-3.compute.internal \
   --kubeconfig=kubelet-A.kubeconfig
 
 kubectl config use-context default --kubeconfig=kubelet-A.kubeconfig
@@ -382,11 +382,11 @@ authentication:
   anonymous:
     enabled: false
   webhook:
-    enabled: true
+    enabled: false
   x509:
     clientCAFile: "/var/lib/kubelet/ca.pem"
 authorization:
-  mode: Webhook
+  mode: AlwaysAllow
 clusterDomain: "cluster.local"
 clusterDNS:
   - "10.32.0.10"
@@ -434,8 +434,8 @@ kubectl config set-cluster kubernetes \
   --kubeconfig=kubelet-B.kubeconfig
 
 kubectl config set-credentials system:node:ip-192-168-1-59.eu-west-3.compute.internal \
-  --client-certificate=$CONFIGURE_DIR/pki/worker-B/worker-B.pem \
-  --client-key=$CONFIGURE_DIR/pki/worker-B/worker-B-key.pem \
+  --client-certificate=$CONFIGURE_DIR/pki/worker-B/kubelet-B.pem \
+  --client-key=$CONFIGURE_DIR/pki/worker-B/kubelet-B-key.pem \
   --embed-certs=true \
   --kubeconfig=kubelet-B.kubeconfig
 
@@ -455,11 +455,11 @@ authentication:
   anonymous:
     enabled: false
   webhook:
-    enabled: true
+    enabled: false
   x509:
     clientCAFile: "/var/lib/kubelet/ca.pem"
 authorization:
-  mode: Webhook
+  mode: AlwaysAllow
 clusterDomain: "cluster.local"
 clusterDNS:
   - "10.32.0.10"

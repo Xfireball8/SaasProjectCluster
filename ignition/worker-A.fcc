@@ -13,11 +13,11 @@ systemd:
         Description=Kubelet Component : Kube Proxy
         
         [Service]
-        ExecStart=/bin/kube-proxy   # General Settings
-          --bind-address=0.0.0.0   --master=192.168.1.62   --config=/var/lib/kube-proxy/config
-          # Network Settings
-          --cluster-cidr=10.200.0.0/16   # Authorization
-          --kubeconfig=/var/lib/kube-proxy/kubeconfig \  
+        ExecStart=/bin/kube-proxy \
+          # General Settings \
+          --config=/var/lib/kube-proxy/config \
+          # Authorization
+          --kubeconfig=/var/lib/kube-proxy/kubeconfig
         Restart=on-failure
         
         [Install]
@@ -28,11 +28,20 @@ systemd:
         Description=Kubelet Worker A
         
         [Service]
-        ExecStart=/bin/kubelet   # General Settings
-          --node-ip=192.168.1.60   --config=/var/lib/kubelet/config   --volume-plugin-dir=/var/lib/kubelet/volume/exec/   # Container Runtime Parameter
-          --container-runtime=docker   --docker-endpoint=unix://var/run/docker.sock   # Networking
-          --cni-bin-dir=/usr/libexec/cni/   --cni-conf-dir=/etc/cni/net.d/   # Authorization
-          --register-node=true   --kubeconfig=/var/lib/kubelet/kubeconfig
+        ExecStart=/bin/kubelet \
+          # General Settings
+          --config=/var/lib/kubelet/config \
+          --volume-plugin-dir=/var/lib/kubelet/volume/exec/ \
+          # Container Runtime Parameter \
+          --container-runtime=docker \
+          --docker-endpoint=unix://var/run/docker.sock \
+          # Networking 
+          --cni-bin-dir=/usr/libexec/cni/ \
+          --cni-conf-dir=/etc/cni/net.d/ \
+          # Authorization
+          --register-node=true \
+          --node-ip=192.168.1.60 \
+          --kubeconfig=/var/lib/kubelet/kubeconfig
         Restart=on-failure
         
         [Install]
@@ -43,6 +52,15 @@ storage:
       mode: 0644
       contents:
         inline: ip-192-168-1-60.eu-west-3.compute.internal 
+    - path: "/etc/hosts"
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: |
+          127.0.0.1 localhost
+          192.168.1.62 ip-192-168-1-62.eu-west-3.compute.internal
+          192.168.1.60 ip-192-168-1-60.eu-west-3.compute.internal
+          192.168.1.59 ip-192-168-1-59.eu-west-3.compute.internal
     - path: "/var/lib/kubelet/cert-key.pem"
       mode: 0644
       contents:

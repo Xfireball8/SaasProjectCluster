@@ -43,15 +43,11 @@ systemd:
         
         [Service]
         ExecStart=/bin/kube-apiserver \
-          # General Settings 
-          --advertise-address=192.168.1.62 \
+          # General Settings
           --apiserver-count=1 \
-          --bind-address=192.168.1.62 \
-          --secure-port=6443 \
           --cloud-provider=aws \
           # Network Settings
           --service-cluster-ip-range=10.32.0.0/16 \
-          --service-node-port-range=30000-32767 \
           # Authorization 
           --authorization-mode=Node,RBAC \
           # Authentication
@@ -72,18 +68,13 @@ systemd:
       contents: |
         [Unit]
         Description=Kubernetes Component : Scheduler
-        
         [Service]
         ExecStart=/bin/kube-scheduler \
-          # General Settings 
-          --bind-address=192.168.1.62 \
-          --master=192.168.1.62 \
-          # Authorization
+          --port 0 \
           --kubeconfig=/var/lib/kube-scheduler/kubeconfig \
-          # Authentication
           --client-ca-file=/var/lib/kube-scheduler/ca.pem \
           --tls-cert-file=/var/lib/kube-scheduler/cert.pem \
-          --tls-private-key-file=/var/lib/kube-scheduler/cert-key.pem 
+          --tls-private-key-file=/var/lib/kube-scheduler/cert-key.pem
         Restart=on-failure
         
         [Install]
@@ -97,10 +88,7 @@ systemd:
         [Service]
         ExecStart=/bin/kube-controller-manager \
           # General Settings
-          --bind-address=0.0.0.0 \
-          --master=192.168.1.62:6443 \
           --cloud-provider=aws \
-          --cluster-name=kubernetes \
           # Network Settings
           --allocate-node-cidrs=true \
           --configure-cloud-routes=true \
@@ -124,6 +112,15 @@ storage:
       mode: 0644
       contents:
         inline: ip-192-168-1-62.eu-west-3.compute.internal
+    - path: "/etc/hosts"
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: |
+          127.0.0.1 localhost
+          192.168.1.62 ip-192-168-1-62.eu-west-3.compute.internal
+          192.168.1.60 ip-192-168-1-60.eu-west-3.compute.internal
+          192.168.1.59 ip-192-168-1-59.eu-west-3.compute.internal
     - path: "/home/core/.kube/config"
       mode: 0644
       contents:
