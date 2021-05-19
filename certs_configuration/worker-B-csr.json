@@ -1,5 +1,5 @@
 {
-  "CN": "system:node:ip-192-168-1-60.eu-west-3.compute.internal",
+  "CN": "system:node:ip-192-168-1-59.eu-west-3.compute.internal",
   "key": {
     "algo": "rsa",
     "size": 2048
