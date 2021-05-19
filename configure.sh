@@ -155,7 +155,7 @@ kubectl config set-cluster kubernetes \
   --server=https://127.0.0.1:6443 \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-controller-manager.kubeconfig
 
-kubectl config set-credentials system:kube-controller-manager \
+kubectl config set-credentials default-controller-manager \
   --client-certificate=$CONFIGURE_DIR/pki/master/kube-controller-manager.pem \
   --client-key=$CONFIGURE_DIR/pki/master/kube-controller-manager-key.pem \
   --embed-certs=true \
@@ -163,7 +163,7 @@ kubectl config set-credentials system:kube-controller-manager \
 
 kubectl config set-context default \
   --cluster=kubernetes \
-  --user=system:kube-controller-manager \
+  --user=default-controller-manager \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-controller-manager.kubeconfig
 
 kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconfig
@@ -208,7 +208,7 @@ kubectl config set-cluster kubernetes \
   --server=https://127.0.0.1:6443 \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-scheduler.kubeconfig
 
-kubectl config set-credentials system:kube-scheduler \
+kubectl config set-credentials default-scheduler \
   --client-certificate=$CONFIGURE_DIR/pki/master/kube-scheduler.pem \
   --client-key=$CONFIGURE_DIR/pki/master/kube-scheduler-key.pem \
   --embed-certs=true \
@@ -216,7 +216,7 @@ kubectl config set-credentials system:kube-scheduler \
 
 kubectl config set-context default \
   --cluster=kubernetes \
-  --user=system:kube-scheduler \
+  --user=default-scheduler \
   --kubeconfig=$CONFIGURE_DIR/kubeconfigs/master/kube-scheduler.kubeconfig
 
 kubectl config use-context default --kubeconfig=kube-scheduler.kubeconfig

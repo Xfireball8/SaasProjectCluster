@@ -23,6 +23,25 @@ resource "aws_internet_gateway" "cluster_internet_gateway" {
   }
 }
 
+resource "aws_default_route_table" "route_table" {
+  default_route_table_id = aws_vpc.k8s_vpc.default_route_table_id
+  
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.cluster_internet_gateway.id
+  }
+
+  route {
+    cidr_block = "10.200.1.0/24"
+    instance_id = aws_instance.worker_node_A.id
+  }
+  
+  route {
+    cidr_block = "10.200.2.0/24"
+    instance_id = aws_instance.worker_node_B.id
+  }
+}
+
 resource "aws_default_security_group" "security_group" {
   vpc_id = aws_vpc.k8s_vpc.id
 
