@@ -89,3 +89,11 @@ storage:
       mode: 0644
       contents:
         source: "s3://saasproj/instances/kube-proxy.config"
+    - path: "/etc/cni/net.d/10-bridge.conf"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/kubelet-A-bridge-conf"
+    - path: "/etc/cni/net.d/99-loopback.conf"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/kubelet-A-loopback-conf"

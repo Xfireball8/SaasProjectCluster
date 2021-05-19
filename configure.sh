@@ -324,10 +324,33 @@ EOF
 
 # Worker A assets generation
 
-# TODO : Kubelet Services
-
-
 cd $CONFIGURE_DIR/kubeconfigs/worker-A/
+
+cat > 10-bridge.conf <<EOF
+{
+    "cniVersion": "0.3.1",
+    "name": "bridge",
+    "type": "bridge",
+    "bridge": "cnio0",
+    "isGateway": true,
+    "ipMasq": true,
+    "ipam": {
+        "type": "host-local",
+        "ranges": [
+          [{"subnet": "10.200.1.0/24"}]
+        ],
+        "routes": [{"dst": "0.0.0.0/0"}]
+    }
+}
+EOF
+
+cat > 99-loopback.conf <<EOF
+{
+    "cniVersion": "0.3.1",
+    "name": "lo",
+    "type": "loopback"
+}
+EOF
 
 cat > kubelet-A.service << EOF
 [Unit]
@@ -469,6 +492,32 @@ runtimeRequestTimeout: "15m"
 tlsCertFile: "/var/lib/kubelet/cert.pem"
 tlsPrivateKeyFile: "/var/lib/kubelet/cert-key.pem"
 cgroupDriver: "systemd"
+EOF
+
+cat > 10-bridge.conf <<EOF
+{
+    "cniVersion": "0.3.1",
+    "name": "bridge",
+    "type": "bridge",
+    "bridge": "cnio0",
+    "isGateway": true,
+    "ipMasq": true,
+    "ipam": {
+        "type": "host-local",
+        "ranges": [
+          [{"subnet": "10.200.2.0/24"}]
+        ],
+        "routes": [{"dst": "0.0.0.0/0"}]
+    }
+}
+EOF
+
+cat > 99-loopback.conf <<EOF
+{
+    "cniVersion": "0.3.1",
+    "name": "lo",
+    "type": "loopback"
+}
 EOF
 
 # Generate encryption-config

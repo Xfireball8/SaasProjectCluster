@@ -374,6 +374,39 @@ resource "aws_s3_bucket_object" "kubelet-A-kubeconfig" {
 ########################################
 
 
+###### KUBELET A NETWORK ###############
+
+resource "aws_s3_bucket_object" "kubelet-A-loopback-conf" {
+  bucket = "saasproj"
+  key = "instances/kubelet-A-loopback-conf"
+  source = "kubeconfigs/worker-A/99-loopback.conf"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+resource "aws_s3_bucket_object" "kubelet-A-bridge-conf" {
+  bucket = "saasproj"
+  key = "instances/kubelet-A-bridge-conf"
+  source = "kubeconfigs/worker-A/10-bridge.conf"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+
+########################################
+
 ###### KUBELET B SERVICE ###############
 
 resource "aws_s3_bucket_object" "kubelet-B-service" {
@@ -453,4 +486,37 @@ resource "aws_s3_bucket_object" "kubelet-B-kubeconfig" {
     null_resource.assets_creation
   ]
 }
+########################################
+
+###### KUBELET B NETWORK ###############
+
+resource "aws_s3_bucket_object" "kubelet-B-loopback-conf" {
+  bucket = "saasproj"
+  key = "instances/kubelet-B-loopback-conf"
+  source = "kubeconfigs/worker-B/99-loopback.conf"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+resource "aws_s3_bucket_object" "kubelet-B-bridge-conf" {
+  bucket = "saasproj"
+  key = "instances/kubelet-B-bridge-conf"
+  source = "kubeconfigs/worker-B/10-bridge.conf"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+
 ########################################
