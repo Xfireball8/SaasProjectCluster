@@ -107,6 +107,38 @@ resource "aws_s3_bucket_object" "kube-apiserver-cert-key-pem" {
 }
 ########## END ####################
 
+######### SERVICE AUTHENTICATON ######
+
+resource "aws_s3_bucket_object" "service-account-pem" {
+  bucket = "saasproj"
+  key = "instances/service-account.pem"
+  source = "pki/master/service-account.pem"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+resource "aws_s3_bucket_object" "service-account-key-pem" {
+  bucket = "saasproj"
+  key = "instances/service-account-key.pem"
+  source = "pki/master/service-account-key.pem"
+
+  tags = {
+    project = "saas"
+  }
+
+  depends_on = [
+    null_resource.assets_creation
+  ]
+}
+
+######################################
+
 #### CONTROLLER MANAGER SERVICE ######
 
 resource "aws_s3_bucket_object" "kube-controller-manager-service" {

@@ -45,9 +45,6 @@ systemd:
         ExecStart=/bin/kube-apiserver \
           # General Settings
           --apiserver-count=1 \
-          --cloud-provider=aws \
-          # Network Settings
-          --service-cluster-ip-range=10.32.0.0/16 \
           # Authorization 
           --authorization-mode=Node,RBAC \
           # Authentication
@@ -58,7 +55,10 @@ systemd:
           --etcd-servers=https://192.168.1.62:2379 \
           --etcd-cafile=/var/lib/kube-apiserver/ca.pem \
           --etcd-certfile=/var/lib/kube-apiserver/cert.pem \
-          --etcd-keyfile=/var/lib/kube-apiserver/cert-key.pem
+          --etcd-keyfile=/var/lib/kube-apiserver/cert-key.pem \
+          # Services
+          --service-account-key-file=/var/lib/kube-apiserver/service-account.pem \
+          --service-cluster-ip-range=10.32.0.0/16 
         Restart=on-failure
         
         [Install]
@@ -70,7 +70,6 @@ systemd:
         Description=Kubernetes Component : Scheduler
         [Service]
         ExecStart=/bin/kube-scheduler \
-          --port 0 \
           --kubeconfig=/var/lib/kube-scheduler/kubeconfig \
           --client-ca-file=/var/lib/kube-scheduler/ca.pem \
           --tls-cert-file=/var/lib/kube-scheduler/cert.pem \
@@ -88,20 +87,18 @@ systemd:
         [Service]
         ExecStart=/bin/kube-controller-manager \
           # General Settings
-          --cloud-provider=aws \
           # Network Settings
-          --allocate-node-cidrs=true \
-          --configure-cloud-routes=true \
-          --cluster-cidr=10.200.0.0/16 \
-          --service-cluster-ip-range=10.32.0.0/16 \
-          --node-cidr-mask-size=16 \
           --flex-volume-plugin-dir=/etc/kubernetes/kubelet-plugins/volume/exec/ \
           # Authentication Settings
           --client-ca-file=/var/lib/kube-controller-manager/ca.pem \
           --tls-cert-file=/var/lib/kube-controller-manager/cert.pem \
           --tls-private-key-file=/var/lib/kube-controller-manager/cert-key.pem \
           # Authorization Settings
-          --kubeconfig=/var/lib/kube-controller-manager/kubeconfig
+          --kubeconfig=/var/lib/kube-controller-manager/kubeconfig \
+          # Services
+          --service-cluster-ip-range=10.32.0.0/16 \
+          --service-account-private-key-file=/var/lib/kube-controller-manager/service-account-key.pem \
+          --use-service-account-credentials=true
         Restart=on-failure
         
         [Install]
@@ -181,3 +178,11 @@ storage:
       mode: 0644
       contents:
         source: "s3://saasproj/instances/kube-scheduler.kubeconfig"
+    - path: "/var/lib/kube-controller-manager/service-account-key.pem"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/service-account-key.pem"
+    - path: "/var/lib/kube-apiserver/service-account.pem"
+      mode: 0644
+      contents:
+        source: "s3://saasproj/instances/service-account.pem"

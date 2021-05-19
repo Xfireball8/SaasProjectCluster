@@ -48,7 +48,7 @@ cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
   -hostname=10.200.0.1,192.168.1.62,127.0.0.1,${KUBERNETES_HOSTNAMES} \
 $CONFIGURE_DIR/certs_configuration/kubernetes-csr.json | cfssljson -bare kube-apiserver
 
-  # k8s Service Account
+  # Service Account
 cfssl gencert -ca=$CONFIGURE_DIR/pki/ca/ca.pem \
   -ca-key=$CONFIGURE_DIR/pki/ca/ca-key.pem \
   -config=$CONFIGURE_DIR/certs_configuration/ca-config.json \
