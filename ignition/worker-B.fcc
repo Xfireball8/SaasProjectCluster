@@ -26,8 +26,10 @@ systemd:
       contents: |
         [Unit]
         Description=Kubelet Worker B
-        
+        After=docker.service
+
         [Service]
+        ExecStartPre=/bin/sleep 10
         ExecStart=/bin/kubelet \
           # General Settings
           --config=/var/lib/kubelet/config \
@@ -35,9 +37,12 @@ systemd:
           # Container Runtime Parameter
           --container-runtime=docker \
           --docker-endpoint=unix://var/run/docker.sock \
+          --runtime-cgroups=/systemd/system.slice/docker.service \
+          --kubelet-cgroups=/systemd/system.slice \
           # Networking
           --cni-bin-dir=/usr/libexec/cni/ \
-          --cni-conf-dir=/etc/cni/net.d/ \
+          --cni-conf-dir=/etc/cni/myconf/ \
+          --network-plugin=cni \
           # Authorization
           --register-node=true \
           --node-ip=192.168.1.59 \
@@ -89,11 +94,11 @@ storage:
       mode: 0644
       contents:
         source: "s3://saasproj/instances/kube-proxy.config"
-    - path: "/etc/cni/net.d/10-bridge.conf"
+    - path: "/etc/cni/myconf/10-bridge.conf"
       mode: 0644
       contents:
         source: "s3://saasproj/instances/kubelet-B-bridge-conf"
-    - path: "/etc/cni/net.d/99-loopback.conf"
+    - path: "/etc/cni/myconf/99-loopback.conf"
       mode: 0644
       contents:
         source: "s3://saasproj/instances/kubelet-B-loopback-conf"

@@ -51,6 +51,11 @@ systemd:
           --client-ca-file=/var/lib/kube-apiserver/ca.pem \
           --tls-cert-file=/var/lib/kube-apiserver/cert.pem \
           --tls-private-key-file=/var/lib/kube-apiserver/cert-key.pem \
+          # Kubelet Authentication
+          --kubelet-certificate-authority=/var/lib/kube-apiserver/ca.pem \
+          --kubelet-client-certificate=/var/lib/kube-apiserver/cert.pem \
+          --kubelet-client-key=/var/lib/kube-apiserver/cert-key.pem \
+          --kubelet-https=true \
           # Etcd Settings
           --etcd-servers=https://192.168.1.62:2379 \
           --etcd-cafile=/var/lib/kube-apiserver/ca.pem \

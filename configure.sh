@@ -355,6 +355,7 @@ EOF
 cat > kubelet-A.service << EOF
 [Unit]
 Description=Kubelet Worker A
+After=docker.service
 
 [Service]
 ExecStart=/bin/kubelet \
@@ -419,6 +420,8 @@ runtimeRequestTimeout: "15m"
 tlsCertFile: "/var/lib/kubelet/cert.pem"
 tlsPrivateKeyFile: "/var/lib/kubelet/cert-key.pem"
 cgroupDriver: "systemd"
+kubeletCgroup: "/system.slice/kubelet.service"
+cgroupRoot: "/system.slice/docker.service"
 EOF
 
 # Worker B assets generation
@@ -428,6 +431,7 @@ cd $CONFIGURE_DIR/kubeconfigs/worker-B/
 cat > kubelet-B.service << EOF
 [Unit]
 Description=Kubelet Worker B
+After=docker.service
 
 [Service]
 ExecStart=/bin/kubelet \
@@ -492,6 +496,8 @@ runtimeRequestTimeout: "15m"
 tlsCertFile: "/var/lib/kubelet/cert.pem"
 tlsPrivateKeyFile: "/var/lib/kubelet/cert-key.pem"
 cgroupDriver: "systemd"
+kubeletCgroup: "/system.slice/kubelet.service"
+cgroupRoot: "/system.slice/docker.service"
 EOF
 
 cat > 10-bridge.conf <<EOF
