@@ -68,6 +68,7 @@ storage:
           192.168.1.59 ip-192-168-1-59.eu-west-3.compute.internal
     - path: "/etc/sysconfig/docker"
       mode: 0644
+      overwrite: true
       contents:
         source: "s3://saasproj/instances/docker"
     - path: "/var/lib/kubelet/cert-key.pem"
