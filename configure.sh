@@ -269,6 +269,22 @@ kubectl config use-context default --kubeconfig=admin.kubeconfig
 
 cd $CONFIGURE_DIR/kubeconfigs/
 
+cat > docker << EOF
+# /etc/sysconfig/docker
+
+# Modify these options if you want to change the way the docker daemon runs
+OPTIONS="--selinux-enabled \
+  --log-driver=journald \
+  --storage-driver=overlay2 \
+  --live-restore \
+  --default-ulimit nofile=1024:1024 \
+  --init-path /usr/libexec/docker/docker-init \
+  --userland-proxy-path /usr/libexec/docker/docker-proxy \
+  --iptables=false \
+  --ip-masq=false
+"
+EOF
+
 # Kube-proxy Related Stuff 
 
 # TODO : Kube-proxy Services

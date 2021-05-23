@@ -323,6 +323,26 @@ resource "aws_s3_bucket_object" "kube-proxy-kubeconfig"{
 
 ########################################
 
+###### KUBELET DOCKER OPTIONS ##########
+
+resource "aws_s3_bucket_object" "docker" {
+  bucket = "saasproj"
+  key = "instances/docker"
+  source = "kubeconfigs/docker"
+
+  tags = {
+    project = "saas"
+  }
+  
+  depends_on = [
+    null_resource.assets_creation
+  ]
+
+}
+
+########################################
+
+
 ###### KUBELET A SERVICE ###############
 
 resource "aws_s3_bucket_object" "kubelet-A-service"{
