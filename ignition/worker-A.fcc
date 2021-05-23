@@ -66,6 +66,23 @@ storage:
           192.168.1.62 ip-192-168-1-62.eu-west-3.compute.internal
           192.168.1.60 ip-192-168-1-60.eu-west-3.compute.internal
           192.168.1.59 ip-192-168-1-59.eu-west-3.compute.internal
+    - path: "/etc/sysconfig/docker"
+      mode: 0644
+      contents:
+        inline: |
+          # /etc/sysconfig/docker
+          
+          # Modify these options if you want to change the way the docker daemon runs
+          OPTIONS="--selinux-enabled \
+            --log-driver=journald \
+            --storage-driver=overlay2 \
+            --live-restore \
+            --default-ulimit nofile=1024:1024 \
+            --init-path /usr/libexec/docker/docker-init \
+            --userland-proxy-path /usr/libexec/docker/docker-proxy \
+            --iptables=false \
+            --ip-masq=false
+          "
     - path: "/var/lib/kubelet/cert-key.pem"
       mode: 0644
       contents:

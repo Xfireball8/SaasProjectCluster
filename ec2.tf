@@ -93,6 +93,7 @@ resource "aws_instance" "control_plane" {
 	private_ip = "192.168.1.62"
 	user_data = file("ignition/master.ign")
   iam_instance_profile = aws_iam_instance_profile.instances_profile.name 
+  source_dest_check = "false"
 
 	root_block_device {
 		delete_on_termination = "true"
@@ -110,6 +111,7 @@ resource "aws_instance" "worker_node_A" {
 	private_ip = "192.168.1.60"
 	user_data = file("ignition/worker-A.ign")
   iam_instance_profile = aws_iam_instance_profile.instances_profile.name 
+  source_dest_check = "false"
 
 	root_block_device {
 		delete_on_termination = "true"
@@ -127,6 +129,7 @@ resource "aws_instance" "worker_node_B" {
 	private_ip = "192.168.1.59"
 	user_data = file("ignition/worker-B.ign")
   iam_instance_profile = aws_iam_instance_profile.instances_profile.name 
+  source_dest_check = "false"
 
 	root_block_device {
 		delete_on_termination = "true"
