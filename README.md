@@ -12,7 +12,7 @@ the next year.
 
 --------------------------------------------------------------------------------------------------
 
-The objective is to deploy a Kubernetes Cluster + Gitlab on AWS under 5 Minutes.
+The goal is to deploy a Kubernetes Cluster + Gitlab on AWS under 5 Minutes.
 
 This repo is the SaaS DevOps engineer infrastructure repo.
 
