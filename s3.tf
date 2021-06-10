@@ -384,6 +384,19 @@ resource "aws_s3_bucket_object" "kubelet-B-config" {
 
 ########################################
 
+resource "aws_s3_bucket_object" "kubelet-B-pem" {
+   bucket = "saasproj"
+   key = "instances/kubelet-B.pem"
+   source = "pki/worker-B/kubelet-B.pem"
+
+   tags = {
+     project = "saas"
+   }
+
+   depends_on = [
+     null_resource.assets_creation
+   ]
+ }
 
 resource "aws_s3_bucket_object" "kubelet-B-key-pem" {
   bucket = "saasproj"
