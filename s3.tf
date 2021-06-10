@@ -367,19 +367,6 @@ resource "aws_s3_bucket_object" "kubelet-A-bridge-conf" {
 
 ###### KUBELET B SERVICE ###############
 
-resource "aws_s3_bucket_object" "kubelet-B-service" {
-  bucket = "saasproj"
-  key = "instances/kubelet-B.service"
-  source = "kubeconfigs/worker-B/kubelet-B.service"
-
-  tags = {
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
 
 resource "aws_s3_bucket_object" "kubelet-B-config" {
   bucket = "saasproj"
