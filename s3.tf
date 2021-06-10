@@ -40,23 +40,6 @@ resource "aws_s3_bucket_object" "admin-kubeconfig" {
 
 ###### MASTER CERTS #####
 
-###### ETCD SERVICE #######
-
-resource "aws_s3_bucket_object" "etcd-service" {
-  bucket = "saasproj"
-  key = "instances/etcd.service"
-  source = "kubeconfigs/master/etcd.service"
-  
-  tags = {
-    project = "saas"
-  }
-
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
-###########################
 
 
 ##############################
@@ -281,21 +264,6 @@ resource "aws_s3_bucket_object" "docker" {
 ########################################
 
 
-###### KUBELET A SERVICE ###############
-
-resource "aws_s3_bucket_object" "kubelet-A-service"{
-  bucket = "saasproj"
-  key = "instances/kubelet-A.service"
-  source = "kubeconfigs/worker-A/kubelet-A.service"
-
-  tags = {
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
 
 resource "aws_s3_bucket_object" "kubelet-A-config" {
   bucket = "saasproj"
@@ -429,21 +397,6 @@ resource "aws_s3_bucket_object" "kubelet-B-config" {
 
 ########################################
 
-###### KUBELET B AUTHENTICATION ########
-
-resource "aws_s3_bucket_object" "kubelet-B-pem" {
-  bucket = "saasproj"
-  key = "instances/kubelet-B.pem"
-  source = "pki/worker-B/kubelet-B.pem"
-
-  tags = {
-    project = "saas"
-  }
-  
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
 
 resource "aws_s3_bucket_object" "kubelet-B-key-pem" {
   bucket = "saasproj"
