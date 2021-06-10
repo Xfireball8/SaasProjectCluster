@@ -88,67 +88,6 @@ $CONFIGURE_DIR/certs_configuration/worker-B-csr.json | cfssljson -bare kubelet-B
 
 cd $CONFIGURE_DIR/kubeconfigs/master
 
-# ETCD Service
-
-cat > etcd.service << EOF
-[Unit]
-Description=etcd
-
-[Service]
-Type=notify
-ExecStart=/bin/etcd \
-  --name ip-192-168-1-62.eu-west-3.compute.internal \
-  --cert-file=/etc/etcd/cert.pem \
-  --key-file=/etc/etcd/cert-key.pem \
-  --peer-cert-file=/etc/etcd/cert.pem \
-  --peer-key-file=/etc/etcd/cert-key.pem \
-  --trusted-ca-file=/etc/etcd/ca.pem \
-  --peer-trusted-ca-file=/etc/etcd/ca.pem \
-  --peer-client-cert-auth \
-  --client-cert-auth \
-  --initial-advertise-peer-urls https://192.168.1.62:2380 \
-  --listen-peer-urls https://192.168.1.62:2380 \
-  --listen-client-urls https://192.168.1.62:2379,https://127.0.0.1:2379 \
-  --advertise-client-urls https://192.168.1.62:2379 \
-  --data-dir=/var/lib/etcd
-Restart=on-failure
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# TODO : API Server Service
-
-cat > kube-apiserver.service << EOF
-[Unit]
-Description=Kubernetes Component : API Server
-
-[Service]
-ExecStart=/bin/kube-apiserver \
-  # General Settings 
-  --advertise-address=192.168.1.62 \
-  --apiserver-count=1 \
-  --bind-address=127.0.0.1 \
-  --secure-port=6443 \
-  --cloud-provider=aws \
-  # Network Settings
-  --service-cluster-ip-range=10.32.0.0/16 \
-  --service-node-port-range=30000-32767 \
-  # Authorization
-  --authorization-mode=Node,RBAC \
-  # Authentication
-  --client-ca-file=/var/lib/kube-apiserver/ca.pem \
-  --tls-cert-file=/var/lib/kube-apiserver/cert.pem \
-  --tls-private-key-file=/var/lib/kube-apiserver/cert-key.pem \
-  # Etcd Settings
-  --etcd-servers=https://192.168.1.62:2379
-Restart=on-failure
-
-[Install]
-WantedBy=kubernetes-ready.target
-EOF
-
 kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
@@ -168,39 +107,7 @@ kubectl config set-context default \
 
 kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconfig
 
-# TODO : Controller Manager Service
-
-cat > kube-controller-manager.service << EOF
-[Unit]
-Description=Kubernetes Component : Controller Manager
-
-[Service]
-ExecStart=/bin/kube-controller-manager \
-  # General Settings
-  --bind-address=0.0.0.0 \
-  --master=127.0.0.1:6443 \
-  --cloud-provider=aws \
-  --cluster-name=kubernetes \
-  # Network Settings
-  --allocate-node-cidr=true \
-  --configure-cloud-routes=true \
-  --cluster-cidr=10.200.0.0/16 \
-  --service-cluster-ip-range=10.32.0.0/16 \
-  --node-cidr-mask-size=16 \
-  --flex-volume-plugin-dir=/etc/kubernetes/kubelet-plugins/volume/exec/ \
-  # Authentication Settings
-  --client-ca-file=/var/lib/kube-controller-manager/ca.pem \
-  --tls-cert-file=/var/lib/kube-controller-manager/cert.pem \
-  --tls-private-key-file=/var/lib/kube-controller-manager/cert-key.pem \
-  # Authorization Settings
-  --kubeconfig=/var/lib/kube-controller-manager/kubeconfig
-Restart=on-failure
-
-[Install]
-WantedBy=kubernetes-ready.target
-EOF
-
-  # Scheduler
+# Scheduler
 
 kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
@@ -221,30 +128,7 @@ kubectl config set-context default \
 
 kubectl config use-context default --kubeconfig=kube-scheduler.kubeconfig
 
-# TODO : Scheduler Service
-
-cat > kube-scheduler.service << EOF
-[Unit]
-Description=Kubernetes Component : Scheduler
-
-[Service]
-ExecStart=/bin/kube-scheduler \
-  # General Settings 
-  --bind-address=0.0.0.0 \
-  --master=127.0.0.1:6443 \
-  # Authorization
-  --config=/var/lib/kube-scheduler/kubeconfig \
-  # Authentication
-  --client-ca-file=/var/lib/kube-scheduler/ca.pem \
-  --tls-cert-file=/var/lib/kube-scheduler/cert.pem \
-  --tls-private-key-file=/var/lib/kube-scheduler/cert-key.pem \
-Restart=on-failure
-
-[Install]
-WantedBy=kubernetes-ready.target
-EOF
-
-  # Admin client
+# Admin client
 
 kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
@@ -286,28 +170,6 @@ OPTIONS="--selinux-enabled \
 EOF
 
 # Kube-proxy Related Stuff 
-
-# TODO : Kube-proxy Services
-
-cat > kube-proxy.service << EOF
-[Unit]
-Description=Kubelet Component : Kube Proxy
-
-[Service]
-ExecStart=/bin/kube-proxy \
-  # General Settings
-  --bind-address=0.0.0.0 \
-  --master=192.168.1.62 \
-  --config=/var/lib/kube-proxy/config
-  # Network Settings
-  --cluster-cidr=10.200.0.0/16 \
-  # Authorization
-  --kubeconfig=/var/lib/kube-proxy/kubeconfig \  
-Restart=on-failure
-
-[Install]
-WantedBy=kubernetes-ready.target
-EOF
 
 kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
@@ -368,32 +230,6 @@ cat > 99-loopback.conf <<EOF
 }
 EOF
 
-cat > kubelet-A.service << EOF
-[Unit]
-Description=Kubelet Worker A
-After=docker.service
-
-[Service]
-ExecStart=/bin/kubelet \
-  # General Settings
-  --node-ip=192.168.1.60 \
-  --config=/var/lib/kubelet/config \
-  --volume-plugin-dir=/var/lib/kubelet/volume/exec/ \
-  # Container Runtime Parameter
-  --container-runtime=docker \
-  --docker-endpoint=unix://var/run/docker.sock \
-  # Networking
-  --cni-bin-dir=/usr/libexec/cni/ \
-  --cni-conf-dir=/etc/cni/net.d/ \
-  # Authorization
-  --register-node=true \
-  --kubeconfig=/var/lib/kubelet/kubeconfig
-Restart=on-failure
-
-[Install]
-WantedBy=kubernetes-ready.target
-EOF
-
 kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \
   --embed-certs=true \
@@ -441,32 +277,6 @@ EOF
 # Worker B assets generation
 
 cd $CONFIGURE_DIR/kubeconfigs/worker-B/
-
-cat > kubelet-B.service << EOF
-[Unit]
-Description=Kubelet Worker B
-After=docker.service
-
-[Service]
-ExecStart=/bin/kubelet \
-  # General Settings
-  --node-ip=192.168.1.59 \
-  --config=/var/lib/kubelet/config \
-  --volume-plugin-dir=/var/lib/kubelet/volume/exec/ \
-  # Container Runtime Parameter
-  --container-runtime=docker \
-  --docker-endpoint=unix://var/run/docker.sock \
-  # Networking
-  --cni-bin-dir=/usr/libexec/cni/ \
-  --cni-conf-dir=/etc/cni/net.d/ \
-  # Authorization
-  --register-node=true \
-  --kubeconfig=/var/lib/kubelet/kubeconfig
-Restart=on-failure
-
-[Install]
-WantedBy=kubernetes-ready.target
-EOF
 
 kubectl config set-cluster kubernetes \
   --certificate-authority=$CONFIGURE_DIR/pki/ca/ca.pem \

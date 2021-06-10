@@ -58,21 +58,6 @@ resource "aws_s3_bucket_object" "etcd-service" {
 
 ###########################
 
-#### API SERVER SERVICE ######
-
-resource "aws_s3_bucket_object" "kube-apiserver-service" {
-  bucket = "saasproj"
-  key = "instances/kube-apiserver.service"
-  source = "kubeconfigs/master/kube-apiserver.service"
-
-  tags = {
-    project = "saas"
-  }
-
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
 
 ##############################
 
@@ -139,21 +124,6 @@ resource "aws_s3_bucket_object" "service-account-key-pem" {
 
 ######################################
 
-#### CONTROLLER MANAGER SERVICE ######
-
-resource "aws_s3_bucket_object" "kube-controller-manager-service" {
-  bucket = "saasproj"
-  key = "instances/kube-controller-manager.service"
-  source = "kubeconfigs/master/kube-controller-manager.service"
-
-  tags = {
-    project = "saas"
-  }
-
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
 
 ##############################
 
@@ -206,23 +176,6 @@ resource "aws_s3_bucket_object" "kube-controller-manager-kubeconfig" {
 
 ######################################
 
-#### KUBE SCHEDULER SERVICE ######
-
-resource "aws_s3_bucket_object" "kube-scheduler-service" {
-  bucket = "saasproj"
-  key = "instances/kube-scheduler.service"
-  source = "kubeconfigs/master/kube-scheduler.service"
-
-  tags = {
-    project = "saas"
-  }
-
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
-
-##############################
 
 # KUBE SCHEDULER AUTHENTICATION #
 
@@ -273,21 +226,6 @@ resource "aws_s3_bucket_object" "kube-scheduler-kubeconfig" {
 
 ########################################
 
-########### KUBE PROXY SERVICE #########
-
-resource "aws_s3_bucket_object" "kube-proxy-service" {
-  bucket = "saasproj"
-  key = "instances/kube-proxy.service"
-  source = "kubeconfigs/kube-proxy.service"
-
-  tags = {
-    project = "saas"
-  }
-
-  depends_on = [
-    null_resource.assets_creation
-  ]
-}
 
 resource "aws_s3_bucket_object" "kube-proxy-config"{
   bucket = "saasproj"

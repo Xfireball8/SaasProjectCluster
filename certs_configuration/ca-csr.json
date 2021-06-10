@@ -6,11 +6,11 @@
   },
   "names": [
     {
-      "C": "US",
-      "L": "Portland",
+      "C": "FR",
+      "L": "Chambéry",
       "O": "Kubernetes",
-      "OU": "CA",
-      "ST": "Oregon"
+      "OU": "Build a learning environment for Kubernetes from scratch !",
+      "ST": "Savoie"
     }
   ]
 }

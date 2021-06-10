@@ -28,6 +28,8 @@ This project use as dependencies :
   - cfssl for PKI gen.
   - kubectl for kubeconfigs gen.
   - Terraform
+  - KubernetesOs from the repo above, you need to compile it, and import it on AWS 
+    because there's no public AMI Yet.
 
 This work is not meant to be used for development or deployment purpose, it's a big 
 project that i did to learn to use Amazon AWS (S3/EC2/VPC/IAM) 
@@ -49,4 +51,10 @@ Finally you can use Terraform to build the cluster.
 > terraform init
 > terraform plan
 > terraform apply
+
+----------------------------------------------------------------------------------------------------
+
+TODO: Refactor assets generation
+TODO: Refactor S3 usage
+TODO: Ignition configuration generation
 

@@ -6,11 +6,11 @@
   },
   "names": [
     {
-      "C": "US",
-      "L": "Portland",
+      "C": "FR",
+      "L": "Chambéry",
       "O": "system:node-proxier",
-      "OU": "Kubernetes The Hard Way",
-      "ST": "Oregon"
+      "OU": "Build a learning environment for Kubernetes from scratch !",
+      "ST": "Savoie"
     }
   ]
 }
